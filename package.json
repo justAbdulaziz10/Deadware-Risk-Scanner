@@ -4,7 +4,7 @@
   "description": "Scan your dependencies for abandoned, unmaintained, and risky open-source packages. Get actionable replacement suggestions before deadware breaks your build.",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "next build --webpack",
     "start": "next start",
     "lint": "next lint"
   },
