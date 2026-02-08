@@ -7,10 +7,10 @@ export const config = {
   // Site
   siteUrl: process.env.NEXT_PUBLIC_SITE_URL || 'https://deadware-risk-scanner.vercel.app',
 
-  // Stripe Payment Links
-  stripe: {
-    proLink: process.env.NEXT_PUBLIC_STRIPE_LINK_PRO || '',
-    teamLink: process.env.NEXT_PUBLIC_STRIPE_LINK_TEAM || '',
+  // Polar.sh Product IDs (for checkout links)
+  polar: {
+    proProductId: process.env.NEXT_PUBLIC_POLAR_PRODUCT_ID_PRO || '',
+    teamProductId: process.env.NEXT_PUBLIC_POLAR_PRODUCT_ID_TEAM || '',
   },
 
   // Pricing
@@ -27,10 +27,11 @@ export const config = {
 } as const;
 
 // Helpers
-export function isStripeConfigured(): boolean {
-  return config.stripe.proLink.length > 0 && config.stripe.teamLink.length > 0;
+export function isPolarConfigured(): boolean {
+  return config.polar.proProductId.length > 0 && config.polar.teamProductId.length > 0;
 }
 
-export function getStripeLink(plan: 'pro' | 'team'): string {
-  return plan === 'pro' ? config.stripe.proLink : config.stripe.teamLink;
+export function getCheckoutUrl(plan: 'pro' | 'team'): string {
+  const productId = plan === 'pro' ? config.polar.proProductId : config.polar.teamProductId;
+  return `/api/checkout?products=${productId}`;
 }

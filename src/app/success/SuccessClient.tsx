@@ -1,45 +1,46 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import { activatePlan, getUserPlan } from '@/lib/storage';
-import { CheckCircle2, ArrowRight, Shield, Sparkles } from 'lucide-react';
+import { fetchUserPlan } from '@/lib/storage';
+import { CheckCircle2, ArrowRight, Shield, Sparkles, Loader2 } from 'lucide-react';
 
 export default function SuccessClient() {
-  const searchParams = useSearchParams();
-  const [activated, setActivated] = useState(false);
-  const [planName, setPlanName] = useState<string>('Pro');
+  const [planName, setPlanName] = useState<string | null>(null);
 
   useEffect(() => {
-    const plan = searchParams.get('plan');
-    if (plan === 'pro' || plan === 'team') {
-      activatePlan(plan);
-      setPlanName(plan === 'team' ? 'Team' : 'Pro');
-      setActivated(true);
-    } else {
-      // Default to pro if no plan param
-      const currentPlan = getUserPlan();
-      if (currentPlan.tier === 'free') {
-        activatePlan('pro');
-        setActivated(true);
+    // Poll for plan activation (webhook may take a few seconds)
+    let attempts = 0;
+    const maxAttempts = 10;
+
+    async function checkPlan() {
+      const plan = await fetchUserPlan();
+      if (plan.tier !== 'free') {
+        setPlanName(plan.tier === 'team' ? 'Team' : 'Pro');
+        return;
+      }
+
+      attempts++;
+      if (attempts < maxAttempts) {
+        setTimeout(checkPlan, 2000);
       } else {
-        setPlanName(currentPlan.tier === 'team' ? 'Team' : 'Pro');
-        setActivated(true);
+        // After 20s, show success anyway — webhook might be delayed
+        setPlanName('Pro');
       }
     }
-  }, [searchParams]);
+
+    checkPlan();
+  }, []);
 
   return (
     <>
       <Navbar />
       <main className="pt-20 pb-12 min-h-screen flex items-center justify-center">
         <div className="max-w-lg mx-auto px-4 text-center">
-          {activated ? (
+          {planName ? (
             <div className="animate-slide-up">
-              {/* Success icon */}
               <div className="relative inline-flex items-center justify-center w-20 h-20 mb-6">
                 <div className="absolute inset-0 bg-emerald-500/20 rounded-full animate-pulse-glow" />
                 <CheckCircle2 className="w-16 h-16 text-emerald-400 relative z-10" />
@@ -53,7 +54,6 @@ export default function SuccessClient() {
                 Your <span className="text-primary-400 font-semibold">{planName}</span> plan is now active. All premium features are unlocked.
               </p>
 
-              {/* Unlocked features */}
               <div className="bg-surface-900/50 border border-surface-800 rounded-xl p-6 mb-8 text-left">
                 <h3 className="text-sm font-semibold text-surface-300 uppercase tracking-wider mb-4 flex items-center gap-2">
                   <Sparkles className="w-4 h-4 text-amber-400" />
@@ -81,7 +81,6 @@ export default function SuccessClient() {
                 </ul>
               </div>
 
-              {/* CTA */}
               <Link
                 href="/scanner"
                 className="inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-500 text-white px-8 py-3.5 rounded-xl font-semibold transition-all hover:shadow-lg hover:shadow-primary-600/25"
@@ -91,13 +90,14 @@ export default function SuccessClient() {
               </Link>
 
               <p className="text-xs text-surface-500 mt-6">
-                Your plan is stored locally in your browser. If you clear your browser data, you may need to reactivate.
+                Your plan is linked to your account and synced securely.
               </p>
             </div>
           ) : (
             <div className="animate-fade-in">
-              <Shield className="w-12 h-12 text-surface-600 mx-auto mb-4" />
-              <p className="text-surface-400">Processing your payment...</p>
+              <Loader2 className="w-12 h-12 text-primary-500 mx-auto mb-4 animate-spin" />
+              <p className="text-surface-400">Confirming your payment...</p>
+              <p className="text-xs text-surface-500 mt-2">This may take a few seconds.</p>
             </div>
           )}
         </div>

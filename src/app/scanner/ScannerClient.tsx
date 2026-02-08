@@ -18,7 +18,7 @@ import {
   incrementScanCount,
   canScan,
 } from '@/lib/storage';
-import { config, isStripeConfigured, getStripeLink } from '@/lib/config';
+import { config, isPolarConfigured, getCheckoutUrl } from '@/lib/config';
 import { ScanResult, PackageAnalysis, UserPlan } from '@/types';
 import {
   Search,
@@ -174,9 +174,7 @@ export default function ScannerClient() {
             <div className="flex items-center gap-2">
               {plan.tier === 'free' ? (
                 <a
-                  href={isStripeConfigured() ? getStripeLink('pro') : '/#pricing'}
-                  target={isStripeConfigured() ? '_blank' : undefined}
-                  rel={isStripeConfigured() ? 'noopener noreferrer' : undefined}
+                  href={isPolarConfigured() ? getCheckoutUrl('pro') : '/#pricing'}
                   className="text-xs text-surface-400 bg-surface-800 hover:bg-surface-700 px-2 py-1 rounded transition-colors flex items-center gap-1.5"
                 >
                   {plan.scansUsed}/{plan.maxScans} free scans
@@ -297,9 +295,7 @@ Example:
                 <p className="text-sm text-red-400">{error}</p>
                 {error.includes('free scan limit') && (
                   <a
-                    href={isStripeConfigured() ? getStripeLink('pro') : '/#pricing'}
-                    target={isStripeConfigured() ? '_blank' : undefined}
-                    rel={isStripeConfigured() ? 'noopener noreferrer' : undefined}
+                    href={isPolarConfigured() ? getCheckoutUrl('pro') : '/#pricing'}
                     className="inline-flex items-center gap-1.5 text-xs text-primary-400 hover:text-primary-300 mt-2 bg-primary-600/10 border border-primary-500/20 px-3 py-1.5 rounded-md transition-colors"
                   >
                     <Crown className="w-3 h-3" />

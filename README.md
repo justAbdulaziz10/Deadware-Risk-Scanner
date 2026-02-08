@@ -16,7 +16,7 @@ Every project depends on open-source packages. But what happens when a maintaine
 - **Bus Factor Analysis** - Identify packages with a single maintainer — the #1 predictor of future abandonment.
 - **Replacement Suggestions** - Get curated, actively-maintained alternatives for every risky dependency.
 - **Multi-Ecosystem** - Supports `package.json` (npm), `requirements.txt` (PyPI), `Gemfile` (RubyGems), `go.mod` (Go), and `Cargo.toml` (Rust).
-- **100% Client-Side** - All analysis runs in your browser. Your code never leaves your machine. No backend, no data collection, no tracking.
+- **Privacy First** - Dependency analysis runs in your browser. Your code never leaves your machine.
 - **PDF & JSON Export** - Generate printable reports for your team or machine-readable JSON for CI pipelines.
 - **CI Health Badge** - Embed a shields.io badge in your README showing your dependency health score.
 
@@ -24,13 +24,13 @@ Every project depends on open-source packages. But what happens when a maintaine
 
 ## How to Use
 
-1. **Go to the website** and click **"Scan Your Dependencies"**
+1. **Sign up** for a free account
 2. **Paste** the contents of your dependency file (`package.json`, `requirements.txt`, `Gemfile`, `go.mod`, or `Cargo.toml`)
 3. **Click "Scan Dependencies"** and wait a few seconds
 4. **Review your risk report** — packages are ranked by risk score with detailed breakdowns
 5. **Export** your report as PDF or JSON, or copy a CI badge for your README
 
-That's it. No sign-up, no API keys required for basic scans.
+Free plan includes 5 scans per month. Upgrade for unlimited access.
 
 ### Optional: GitHub Enrichment (BYOK)
 
@@ -44,6 +44,8 @@ For richer analysis (repository archived status, open issue counts, security pol
 
 - Node.js 18+
 - npm or yarn
+- A [Supabase](https://supabase.com) project (free tier)
+- A [Polar.sh](https://polar.sh) account (free — for payments)
 
 ### Setup
 
@@ -64,17 +66,19 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) in your browser.
 
+### Database Setup (Supabase)
+
+1. Create a project at [supabase.com](https://supabase.com)
+2. Go to **SQL Editor** → **New Query**
+3. Paste the contents of `supabase/schema.sql` and run it
+4. Copy your API keys from **Project Settings → API** into `.env.local`
+
 ### Build for Production
 
 ```bash
 npm run build
+npm start
 ```
-
-This generates a fully static site in the `out/` directory that can be deployed anywhere (Vercel, Netlify, Cloudflare Pages, GitHub Pages, etc.).
-
-### Environment Variables
-
-All configuration lives in `.env.local`. See the [Environment Variables](#environment-variables-reference) section below for details on each variable.
 
 ---
 
@@ -82,35 +86,57 @@ All configuration lives in `.env.local`. See the [Environment Variables](#enviro
 
 1. Push your repo to GitHub
 2. Import the project on [vercel.com](https://vercel.com)
-3. Add your environment variables in **Settings > Environment Variables**
-4. Deploy — Vercel auto-detects Next.js and static export
+3. Add all environment variables in **Settings > Environment Variables**
+4. Deploy — Vercel auto-detects Next.js
 
 ---
 
 ## Environment Variables Reference
 
-| Variable | Required | Description |
+### Required
+
+| Variable | Where to get it |
+|---|---|
+| `NEXT_PUBLIC_SITE_URL` | Your deployed URL (e.g. `https://deadware-risk-scanner.vercel.app`) |
+| `NEXT_PUBLIC_SUPABASE_URL` | Supabase Dashboard → Project Settings → API → Project URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase Dashboard → Project Settings → API → anon public key |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase Dashboard → Project Settings → API → service_role key |
+
+### Payments (Polar.sh)
+
+| Variable | Where to get it |
+|---|---|
+| `POLAR_ACCESS_TOKEN` | [polar.sh/settings](https://polar.sh/settings) → Developers → Personal Access Tokens |
+| `POLAR_WEBHOOK_SECRET` | Polar Dashboard → Settings → Webhooks → Add Endpoint → copy secret |
+| `POLAR_PRODUCT_ID_TEAM` | Polar Dashboard → Products → Team product → copy ID |
+| `POLAR_ENVIRONMENT` | `sandbox` for testing, `production` when live |
+| `NEXT_PUBLIC_POLAR_PRODUCT_ID_PRO` | Polar Dashboard → Products → Pro product → copy ID |
+| `NEXT_PUBLIC_POLAR_PRODUCT_ID_TEAM` | Polar Dashboard → Products → Team product → copy ID |
+
+### UI & Branding
+
+| Variable | Default | Description |
 |---|---|---|
-| `NEXT_PUBLIC_SITE_URL` | Yes | Your deployed site URL (e.g. `https://deadware-risk-scanner.vercel.app`) |
-| `NEXT_PUBLIC_STRIPE_LINK_PRO` | No | Stripe Payment Link URL for the Pro plan |
-| `NEXT_PUBLIC_STRIPE_LINK_TEAM` | No | Stripe Payment Link URL for the Team plan |
-| `NEXT_PUBLIC_PRO_PRICE` | No | Pro plan price displayed in the UI (default: `9`) |
-| `NEXT_PUBLIC_TEAM_PRICE` | No | Team plan price displayed in the UI (default: `29`) |
-| `NEXT_PUBLIC_AUTHOR_NAME` | No | Your display name shown in the footer and metadata |
-| `NEXT_PUBLIC_GITHUB_URL` | No | Your GitHub profile URL |
-| `NEXT_PUBLIC_GITHUB_REPO` | No | This project's GitHub repository URL |
-| `NEXT_PUBLIC_BUYMEACOFFEE_URL` | No | Your Buy Me a Coffee page URL |
+| `NEXT_PUBLIC_PRO_PRICE` | `9` | Pro plan price shown in the UI |
+| `NEXT_PUBLIC_TEAM_PRICE` | `29` | Team plan price shown in the UI |
+| `NEXT_PUBLIC_AUTHOR_NAME` | `justAbdulaziz10` | Display name in footer & metadata |
+| `NEXT_PUBLIC_GITHUB_URL` | Your GitHub profile | GitHub profile link |
+| `NEXT_PUBLIC_GITHUB_REPO` | This repo | "View on GitHub" link |
+| `NEXT_PUBLIC_BUYMEACOFFEE_URL` | Your BMAC page | "Buy Me a Coffee" link |
 
 ---
 
 ## Tech Stack
 
-- **Framework**: [Next.js 16](https://nextjs.org/) (App Router, static export)
+- **Framework**: [Next.js 16](https://nextjs.org/) (App Router)
 - **Language**: TypeScript
 - **Styling**: [Tailwind CSS v4](https://tailwindcss.com/)
 - **Icons**: [Lucide React](https://lucide.dev/)
-- **Payments**: [Stripe Payment Links](https://stripe.com/payments/payment-links) (no backend needed)
-- **Deployment**: Vercel (or any static host)
+- **Auth & Database**: [Supabase](https://supabase.com/) (free tier)
+- **Payments**: [Polar.sh](https://polar.sh/) (free — supports Saudi Arabia & 40+ countries)
+- **Deployment**: [Vercel](https://vercel.com/) (free tier)
+
+**Total cost to run: $0** — You only pay Polar's 4% fee when you make actual sales.
 
 ---
 
@@ -119,34 +145,34 @@ All configuration lives in `.env.local`. See the [Environment Variables](#enviro
 ```
 src/
   app/
-    page.tsx            # Landing page
+    page.tsx              # Landing page
     scanner/
-      page.tsx          # Scanner page (metadata)
-      ScannerClient.tsx # Scanner UI (client component)
+      page.tsx            # Scanner metadata
+      ScannerClient.tsx   # Scanner UI
     success/
-      page.tsx          # Post-payment success page
-    layout.tsx          # Root layout with SEO metadata
-    globals.css         # Tailwind v4 theme + animations
-    robots.ts           # robots.txt generation
-    sitemap.ts          # sitemap.xml generation
-  components/
-    Navbar.tsx          # Navigation bar
-    Footer.tsx          # Footer with links
-    PackageCard.tsx     # Expandable package risk card
-    HealthGauge.tsx     # Circular health score gauge
-    ScanSummaryCard.tsx # Summary stats row
-    RiskBadge.tsx       # Risk level badge
-    ExportPanel.tsx     # Export/share controls
-    SettingsPanel.tsx   # BYOK token settings
-    PricingSection.tsx  # Pricing tiers
+      page.tsx            # Post-payment success
+      SuccessClient.tsx   # Plan activation polling
+    login/                # Login page
+    signup/               # Signup page
+    auth/callback/        # Supabase auth callback
+    api/
+      checkout/           # Polar checkout handler
+      webhooks/polar/     # Polar webhook handler
+    layout.tsx            # Root layout + SEO
+    globals.css           # Theme + animations
+  components/             # UI components
   lib/
-    config.ts           # Centralized env config
-    parsers.ts          # Dependency file parsers
-    analyzer.ts         # Risk scoring engine
-    storage.ts          # localStorage wrappers
-    export.ts           # PDF/JSON export + CI badge
+    config.ts             # Centralized env config
+    parsers.ts            # Dependency file parsers
+    analyzer.ts           # Risk scoring engine
+    storage.ts            # Supabase plans + localStorage
+    export.ts             # PDF/JSON export + CI badge
+    supabase/             # Supabase client/server/middleware
   types/
-    index.ts            # TypeScript type definitions
+    index.ts              # TypeScript types
+middleware.ts             # Next.js auth middleware
+supabase/
+  schema.sql              # Database schema (run once)
 ```
 
 ---

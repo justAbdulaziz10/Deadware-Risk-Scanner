@@ -2,10 +2,10 @@
 
 import Link from 'next/link';
 import { CheckCircle2 } from 'lucide-react';
-import { config, isStripeConfigured, getStripeLink } from '@/lib/config';
+import { config, isPolarConfigured, getCheckoutUrl } from '@/lib/config';
 
 export default function PricingSection() {
-  const stripeReady = isStripeConfigured();
+  const paymentsReady = isPolarConfigured();
 
   return (
     <section id="pricing" className="py-24 px-4">
@@ -44,7 +44,7 @@ export default function PricingSection() {
               ))}
             </ul>
             <Link
-              href="/scanner"
+              href="/signup"
               className="w-full py-3 rounded-lg border border-surface-600 text-surface-200 text-center font-medium hover:bg-surface-800 transition-colors text-sm block"
             >
               Get Started Free
@@ -80,12 +80,10 @@ export default function PricingSection() {
               ))}
             </ul>
             <a
-              href={stripeReady ? getStripeLink('pro') : '#pricing'}
-              target={stripeReady ? '_blank' : undefined}
-              rel={stripeReady ? 'noopener noreferrer' : undefined}
-              onClick={!stripeReady ? (e) => {
+              href={paymentsReady ? getCheckoutUrl('pro') : '#pricing'}
+              onClick={!paymentsReady ? (e) => {
                 e.preventDefault();
-                alert('Stripe checkout is being set up. Check back soon!');
+                alert('Payments are being set up. Check back soon!');
               } : undefined}
               className="w-full py-3 rounded-lg bg-primary-600 hover:bg-primary-500 text-white text-center font-medium transition-colors text-sm block"
             >
@@ -119,12 +117,10 @@ export default function PricingSection() {
               ))}
             </ul>
             <a
-              href={stripeReady ? getStripeLink('team') : '#pricing'}
-              target={stripeReady ? '_blank' : undefined}
-              rel={stripeReady ? 'noopener noreferrer' : undefined}
-              onClick={!stripeReady ? (e) => {
+              href={paymentsReady ? getCheckoutUrl('team') : '#pricing'}
+              onClick={!paymentsReady ? (e) => {
                 e.preventDefault();
-                alert('Stripe checkout is being set up. Check back soon!');
+                alert('Payments are being set up. Check back soon!');
               } : undefined}
               className="w-full py-3 rounded-lg border border-surface-600 text-surface-200 text-center font-medium hover:bg-surface-800 transition-colors text-sm block"
             >
