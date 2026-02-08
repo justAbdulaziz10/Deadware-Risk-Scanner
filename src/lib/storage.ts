@@ -104,3 +104,20 @@ export function activateProPlan(): void {
     features: ['basic_scan', 'risk_dashboard', 'export_pdf', 'export_json', 'ci_badge', 'unlimited_scans', 'priority_support'],
   });
 }
+
+export function activateTeamPlan(): void {
+  saveUserPlan({
+    tier: 'team',
+    scansUsed: 0,
+    maxScans: Infinity,
+    features: ['basic_scan', 'risk_dashboard', 'export_pdf', 'export_json', 'ci_badge', 'unlimited_scans', 'priority_support', 'team_dashboard', 'webhooks', 'custom_thresholds'],
+  });
+}
+
+export function activatePlan(plan: 'pro' | 'team'): void {
+  if (plan === 'team') {
+    activateTeamPlan();
+  } else {
+    activateProPlan();
+  }
+}

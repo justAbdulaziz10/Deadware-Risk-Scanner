@@ -18,6 +18,7 @@ import {
   incrementScanCount,
   canScan,
 } from '@/lib/storage';
+import { STRIPE_LINKS, isStripeConfigured } from '@/lib/stripe';
 import { ScanResult, PackageAnalysis } from '@/types';
 import {
   Search,
@@ -28,6 +29,7 @@ import {
   AlertTriangle,
   Package,
   ArrowUpDown,
+  Crown,
   Coffee,
 } from 'lucide-react';
 
@@ -167,11 +169,22 @@ export default function ScannerClient() {
               </p>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-xs text-surface-500 bg-surface-800 px-2 py-1 rounded">
-                {plan.tier === 'free'
-                  ? `${plan.scansUsed}/${plan.maxScans} free scans`
-                  : `${plan.tier.toUpperCase()} plan`}
-              </span>
+              {plan.tier === 'free' ? (
+                <a
+                  href={isStripeConfigured() ? STRIPE_LINKS.pro : '/#pricing'}
+                  target={isStripeConfigured() ? '_blank' : undefined}
+                  rel={isStripeConfigured() ? 'noopener noreferrer' : undefined}
+                  className="text-xs text-surface-400 bg-surface-800 hover:bg-surface-700 px-2 py-1 rounded transition-colors flex items-center gap-1.5"
+                >
+                  {plan.scansUsed}/{plan.maxScans} free scans
+                  <Crown className="w-3 h-3 text-amber-400" />
+                </a>
+              ) : (
+                <span className="text-xs text-primary-400 bg-primary-600/10 border border-primary-500/20 px-2 py-1 rounded flex items-center gap-1.5">
+                  <Crown className="w-3 h-3" />
+                  {plan.tier.toUpperCase()}
+                </span>
+              )}
               <button
                 onClick={() => setShowHistory(!showHistory)}
                 className="p-2 rounded-lg border border-surface-700 hover:bg-surface-800 text-surface-400 hover:text-surface-200 transition-colors"
@@ -281,10 +294,13 @@ Example:
                 <p className="text-sm text-red-400">{error}</p>
                 {error.includes('free scan limit') && (
                   <a
-                    href="/#pricing"
-                    className="text-xs text-primary-400 hover:text-primary-300 mt-1 inline-block"
+                    href={isStripeConfigured() ? STRIPE_LINKS.pro : '/#pricing'}
+                    target={isStripeConfigured() ? '_blank' : undefined}
+                    rel={isStripeConfigured() ? 'noopener noreferrer' : undefined}
+                    className="inline-flex items-center gap-1.5 text-xs text-primary-400 hover:text-primary-300 mt-2 bg-primary-600/10 border border-primary-500/20 px-3 py-1.5 rounded-md transition-colors"
                   >
-                    View pricing plans
+                    <Crown className="w-3 h-3" />
+                    Upgrade to Pro — Unlimited scans for $9/mo
                   </a>
                 )}
               </div>
