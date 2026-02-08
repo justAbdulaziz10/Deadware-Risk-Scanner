@@ -24,6 +24,9 @@
   ],
   "author": "justAbdulaziz10",
   "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
   "dependencies": {
     "@polar-sh/nextjs": "^0.9.3",
     "@polar-sh/sdk": "^0.42.5",
