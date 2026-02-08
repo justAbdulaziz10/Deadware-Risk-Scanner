@@ -89,7 +89,7 @@ export default function RootLayout({
       },
       {
         '@type': 'Offer',
-        price: '9',
+        price: config.pricing.proPrice,
         priceCurrency: 'USD',
         name: 'Pro',
         description: 'Unlimited scans, PDF/JSON export, CI badge',

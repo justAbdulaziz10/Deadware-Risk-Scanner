@@ -94,6 +94,8 @@ All configuration lives in `.env.local`. See the [Environment Variables](#enviro
 | `NEXT_PUBLIC_SITE_URL` | Yes | Your deployed site URL (e.g. `https://deadware-risk-scanner.vercel.app`) |
 | `NEXT_PUBLIC_STRIPE_LINK_PRO` | No | Stripe Payment Link URL for the Pro plan |
 | `NEXT_PUBLIC_STRIPE_LINK_TEAM` | No | Stripe Payment Link URL for the Team plan |
+| `NEXT_PUBLIC_PRO_PRICE` | No | Pro plan price displayed in the UI (default: `9`) |
+| `NEXT_PUBLIC_TEAM_PRICE` | No | Team plan price displayed in the UI (default: `29`) |
 | `NEXT_PUBLIC_AUTHOR_NAME` | No | Your display name shown in the footer and metadata |
 | `NEXT_PUBLIC_GITHUB_URL` | No | Your GitHub profile URL |
 | `NEXT_PUBLIC_GITHUB_REPO` | No | This project's GitHub repository URL |

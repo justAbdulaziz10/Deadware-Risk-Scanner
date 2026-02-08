@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { CheckCircle2 } from 'lucide-react';
-import { isStripeConfigured, getStripeLink } from '@/lib/config';
+import { config, isStripeConfigured, getStripeLink } from '@/lib/config';
 
 export default function PricingSection() {
   const stripeReady = isStripeConfigured();
@@ -59,7 +59,7 @@ export default function PricingSection() {
             <div className="mb-6">
               <h3 className="text-lg font-semibold mb-1">Pro</h3>
               <div className="flex items-baseline gap-1">
-                <span className="text-4xl font-bold">$9</span>
+                <span className="text-4xl font-bold">${config.pricing.proPrice}</span>
                 <span className="text-surface-400">/month</span>
               </div>
             </div>
@@ -98,7 +98,7 @@ export default function PricingSection() {
             <div className="mb-6">
               <h3 className="text-lg font-semibold mb-1">Team</h3>
               <div className="flex items-baseline gap-1">
-                <span className="text-4xl font-bold">$29</span>
+                <span className="text-4xl font-bold">${config.pricing.teamPrice}</span>
                 <span className="text-surface-400">/month</span>
               </div>
             </div>

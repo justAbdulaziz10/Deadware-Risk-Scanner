@@ -300,7 +300,7 @@ Example:
                     className="inline-flex items-center gap-1.5 text-xs text-primary-400 hover:text-primary-300 mt-2 bg-primary-600/10 border border-primary-500/20 px-3 py-1.5 rounded-md transition-colors"
                   >
                     <Crown className="w-3 h-3" />
-                    Upgrade to Pro — Unlimited scans for $9/mo
+                    Upgrade to Pro — Unlimited scans for ${config.pricing.proPrice}/mo
                   </a>
                 )}
               </div>

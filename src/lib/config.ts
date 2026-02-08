@@ -13,6 +13,12 @@ export const config = {
     teamLink: process.env.NEXT_PUBLIC_STRIPE_LINK_TEAM || '',
   },
 
+  // Pricing
+  pricing: {
+    proPrice: process.env.NEXT_PUBLIC_PRO_PRICE || '9',
+    teamPrice: process.env.NEXT_PUBLIC_TEAM_PRICE || '29',
+  },
+
   // Branding
   authorName: process.env.NEXT_PUBLIC_AUTHOR_NAME || 'justAbdulaziz10',
   githubUrl: process.env.NEXT_PUBLIC_GITHUB_URL || 'https://github.com/justAbdulaziz10',
