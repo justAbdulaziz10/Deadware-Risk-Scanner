@@ -20,7 +20,7 @@ export const POST = Webhooks({
     const productId = payload.data.productId;
 
     // Determine plan from product ID
-    const plan = productId === process.env.POLAR_PRODUCT_ID_TEAM ? 'team' : 'pro';
+    const plan = productId === process.env.NEXT_PUBLIC_POLAR_PRODUCT_ID_TEAM ? 'team' : 'pro';
 
     const { data: profiles } = await supabase
       .from('profiles')
