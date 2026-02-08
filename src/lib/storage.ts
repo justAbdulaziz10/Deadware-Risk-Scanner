@@ -1,22 +1,21 @@
 import { ScanResult, UserSettings, UserPlan } from '@/types';
+import { createClient } from '@/lib/supabase/client';
 
 const STORAGE_KEYS = {
   SCANS: 'deadware_scans',
   SETTINGS: 'deadware_settings',
-  PLAN: 'deadware_plan',
 } as const;
 
 function isBrowser(): boolean {
   return typeof window !== 'undefined';
 }
 
-// ---- Scan Results ----
+// ---- Scan Results (localStorage — user-local, no auth needed) ----
 
 export function saveScanResult(result: ScanResult): void {
   if (!isBrowser()) return;
   const existing = getScanHistory();
   existing.unshift(result);
-  // Keep last 50 scans
   const trimmed = existing.slice(0, 50);
   localStorage.setItem(STORAGE_KEYS.SCANS, JSON.stringify(trimmed));
 }
@@ -43,7 +42,7 @@ export function clearScanHistory(): void {
   localStorage.removeItem(STORAGE_KEYS.SCANS);
 }
 
-// ---- User Settings (BYOK tokens) ----
+// ---- User Settings (localStorage — BYOK tokens stay local) ----
 
 export function saveSettings(settings: UserSettings): void {
   if (!isBrowser()) return;
@@ -60,64 +59,88 @@ export function getSettings(): UserSettings {
   }
 }
 
-// ---- User Plan ----
+// ---- User Plan (Supabase — server-verified) ----
 
-const DEFAULT_PLAN: UserPlan = {
+const FREE_PLAN: UserPlan = {
   tier: 'free',
   scansUsed: 0,
   maxScans: 5,
   features: ['basic_scan', 'risk_dashboard'],
 };
 
-export function getUserPlan(): UserPlan {
-  if (!isBrowser()) return DEFAULT_PLAN;
-  try {
-    const data = localStorage.getItem(STORAGE_KEYS.PLAN);
-    return data ? JSON.parse(data) : DEFAULT_PLAN;
-  } catch {
-    return DEFAULT_PLAN;
+const PRO_PLAN: UserPlan = {
+  tier: 'pro',
+  scansUsed: 0,
+  maxScans: Infinity,
+  features: ['basic_scan', 'risk_dashboard', 'export_pdf', 'export_json', 'ci_badge', 'unlimited_scans', 'priority_support'],
+};
+
+const TEAM_PLAN: UserPlan = {
+  tier: 'team',
+  scansUsed: 0,
+  maxScans: Infinity,
+  features: ['basic_scan', 'risk_dashboard', 'export_pdf', 'export_json', 'ci_badge', 'unlimited_scans', 'priority_support', 'team_dashboard', 'webhooks', 'custom_thresholds'],
+};
+
+function planFromTier(tier: string): UserPlan {
+  switch (tier) {
+    case 'pro': return { ...PRO_PLAN };
+    case 'team': return { ...TEAM_PLAN };
+    default: return { ...FREE_PLAN };
   }
 }
 
-export function saveUserPlan(plan: UserPlan): void {
+// Fetch user's plan from Supabase
+export async function fetchUserPlan(): Promise<UserPlan> {
+  if (!isBrowser()) return FREE_PLAN;
+
+  try {
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) return FREE_PLAN;
+
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('plan, scans_used')
+      .eq('id', user.id)
+      .single();
+
+    if (!profile) return FREE_PLAN;
+
+    const plan = planFromTier(profile.plan);
+    plan.scansUsed = profile.scans_used || 0;
+    return plan;
+  } catch {
+    return FREE_PLAN;
+  }
+}
+
+// Increment scan count in Supabase
+export async function incrementScanCount(): Promise<void> {
   if (!isBrowser()) return;
-  localStorage.setItem(STORAGE_KEYS.PLAN, JSON.stringify(plan));
+
+  try {
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) return;
+
+    await supabase.rpc('increment_scan_count', { user_id: user.id });
+  } catch {
+    // Silently fail — don't block scanning
+  }
 }
 
-export function incrementScanCount(): void {
-  const plan = getUserPlan();
-  plan.scansUsed++;
-  saveUserPlan(plan);
-}
-
-export function canScan(): boolean {
-  const plan = getUserPlan();
+// Check if user can scan (plan-based)
+export async function canScan(): Promise<boolean> {
+  const plan = await fetchUserPlan();
   if (plan.tier !== 'free') return true;
   return plan.scansUsed < plan.maxScans;
 }
 
-export function activateProPlan(): void {
-  saveUserPlan({
-    tier: 'pro',
-    scansUsed: 0,
-    maxScans: Infinity,
-    features: ['basic_scan', 'risk_dashboard', 'export_pdf', 'export_json', 'ci_badge', 'unlimited_scans', 'priority_support'],
-  });
-}
-
-export function activateTeamPlan(): void {
-  saveUserPlan({
-    tier: 'team',
-    scansUsed: 0,
-    maxScans: Infinity,
-    features: ['basic_scan', 'risk_dashboard', 'export_pdf', 'export_json', 'ci_badge', 'unlimited_scans', 'priority_support', 'team_dashboard', 'webhooks', 'custom_thresholds'],
-  });
-}
-
-export function activatePlan(plan: 'pro' | 'team'): void {
-  if (plan === 'team') {
-    activateTeamPlan();
-  } else {
-    activateProPlan();
-  }
+// Synchronous fallback for components that can't await
+// (used for initial render — real check is async)
+export function getUserPlan(): UserPlan {
+  return FREE_PLAN;
 }

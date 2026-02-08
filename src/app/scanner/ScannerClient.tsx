@@ -14,12 +14,12 @@ import {
   getScanHistory,
   deleteScanResult,
   getSettings,
-  getUserPlan,
+  fetchUserPlan,
   incrementScanCount,
   canScan,
 } from '@/lib/storage';
 import { config, isStripeConfigured, getStripeLink } from '@/lib/config';
-import { ScanResult, PackageAnalysis } from '@/types';
+import { ScanResult, PackageAnalysis, UserPlan } from '@/types';
 import {
   Search,
   Settings,
@@ -62,8 +62,11 @@ export default function ScannerClient() {
   const [filterLevel, setFilterLevel] = useState<string>('all');
   const [error, setError] = useState<string | null>(null);
 
+  const [plan, setPlan] = useState<UserPlan>({ tier: 'free', scansUsed: 0, maxScans: 5, features: [] });
+
   useEffect(() => {
     setHistory(getScanHistory());
+    fetchUserPlan().then(setPlan);
   }, []);
 
   const handleScan = useCallback(async () => {
@@ -72,7 +75,8 @@ export default function ScannerClient() {
       return;
     }
 
-    if (!canScan()) {
+    const allowed = await canScan();
+    if (!allowed) {
       setError(
         'You have reached your free scan limit. Upgrade to Pro for unlimited scans.'
       );
@@ -107,7 +111,8 @@ export default function ScannerClient() {
       const scanResult = createScanResult(analyses, ecosystem, input);
       setResult(scanResult);
       saveScanResult(scanResult);
-      incrementScanCount();
+      await incrementScanCount();
+      fetchUserPlan().then(setPlan);
       setHistory(getScanHistory());
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An unexpected error occurred.');
@@ -152,8 +157,6 @@ export default function ScannerClient() {
           }
         })
     : [];
-
-  const plan = getUserPlan();
 
   return (
     <>
