@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { Shield, Menu, X, Github } from 'lucide-react';
+import { config } from '@/lib/config';
 
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -32,7 +33,7 @@ export default function Navbar() {
               How It Works
             </Link>
             <a
-              href="https://github.com/justAbdulaziz10"
+              href={config.githubUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="text-surface-400 hover:text-surface-100 transition-colors"

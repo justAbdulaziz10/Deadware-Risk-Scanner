@@ -2,6 +2,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import Link from 'next/link';
 import PricingSection from '@/components/PricingSection';
+import { config } from '@/lib/config';
 import {
   Shield,
   Search,
@@ -61,7 +62,7 @@ export default function HomePage() {
                 <ArrowRight className="w-4 h-4" />
               </Link>
               <a
-                href="https://github.com/justAbdulaziz10/Deadware-Risk-Scanner"
+                href={config.githubRepo}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="border border-surface-700 hover:border-surface-500 text-surface-300 hover:text-surface-100 px-8 py-3.5 rounded-xl text-base font-medium transition-all flex items-center gap-2"
@@ -272,16 +273,16 @@ export default function HomePage() {
               <p className="text-surface-500 text-sm">
                 Built and maintained by{' '}
                 <a
-                  href="https://github.com/justAbdulaziz10"
+                  href={config.githubUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-primary-400 hover:text-primary-300 transition-colors"
                 >
-                  justAbdulaziz10
+                  {config.authorName}
                 </a>
               </p>
               <a
-                href="https://buymeacoffee.com/justAbdulaziz10"
+                href={config.buyMeACoffeeUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 bg-amber-500/10 border border-amber-500/20 text-amber-400 hover:text-amber-300 px-5 py-2.5 rounded-lg text-sm font-medium transition-colors"
@@ -291,7 +292,7 @@ export default function HomePage() {
               </a>
               <div className="flex items-center gap-4 mt-2">
                 <a
-                  href="https://github.com/justAbdulaziz10"
+                  href={config.githubUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 text-surface-400 hover:text-surface-200 text-sm transition-colors"
@@ -300,7 +301,7 @@ export default function HomePage() {
                   GitHub
                 </a>
                 <a
-                  href="https://github.com/justAbdulaziz10/Deadware-Risk-Scanner"
+                  href={config.githubRepo}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 text-surface-400 hover:text-surface-200 text-sm transition-colors"

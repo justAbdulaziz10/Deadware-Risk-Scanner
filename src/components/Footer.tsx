@@ -1,5 +1,6 @@
 import { Shield, Github, Heart, Coffee } from 'lucide-react';
 import Link from 'next/link';
+import { config } from '@/lib/config';
 
 export default function Footer() {
   return (
@@ -21,7 +22,7 @@ export default function Footer() {
             </p>
             <div className="flex items-center gap-4">
               <a
-                href="https://github.com/justAbdulaziz10"
+                href={config.githubUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-surface-400 hover:text-surface-100 transition-colors"
@@ -30,7 +31,7 @@ export default function Footer() {
                 <Github className="w-5 h-5" />
               </a>
               <a
-                href="https://buymeacoffee.com/justAbdulaziz10"
+                href={config.buyMeACoffeeUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-surface-400 hover:text-amber-400 transition-colors"
@@ -78,7 +79,7 @@ export default function Footer() {
             <ul className="space-y-2">
               <li>
                 <a
-                  href="https://github.com/justAbdulaziz10/Deadware-Risk-Scanner"
+                  href={config.githubRepo}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-sm text-surface-400 hover:text-surface-100 transition-colors"
@@ -88,7 +89,7 @@ export default function Footer() {
               </li>
               <li>
                 <a
-                  href="https://github.com/justAbdulaziz10/Deadware-Risk-Scanner/issues"
+                  href={`${config.githubRepo}/issues`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-sm text-surface-400 hover:text-surface-100 transition-colors"
@@ -98,7 +99,7 @@ export default function Footer() {
               </li>
               <li>
                 <a
-                  href="https://buymeacoffee.com/justAbdulaziz10"
+                  href={config.buyMeACoffeeUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-sm text-surface-400 hover:text-surface-100 transition-colors"
@@ -115,12 +116,12 @@ export default function Footer() {
           <p className="text-sm text-surface-500">
             &copy; {new Date().getFullYear()} Deadware Risk Scanner. Built by{' '}
             <a
-              href="https://github.com/justAbdulaziz10"
+              href={config.githubUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="text-primary-400 hover:text-primary-300 transition-colors"
             >
-              justAbdulaziz10
+              {config.authorName}
             </a>
           </p>
           <p className="text-sm text-surface-500 flex items-center gap-1">

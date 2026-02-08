@@ -1,4 +1,5 @@
 import { MetadataRoute } from 'next';
+import { config } from '@/lib/config';
 
 export const dynamic = 'force-static';
 
@@ -10,6 +11,6 @@ export default function robots(): MetadataRoute.Robots {
         allow: '/',
       },
     ],
-    sitemap: 'https://deadware-scanner.vercel.app/sitemap.xml',
+    sitemap: `${config.siteUrl}/sitemap.xml`,
   };
 }

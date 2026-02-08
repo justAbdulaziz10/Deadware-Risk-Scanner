@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { CheckCircle2 } from 'lucide-react';
-import { STRIPE_LINKS, isStripeConfigured } from '@/lib/stripe';
+import { isStripeConfigured, getStripeLink } from '@/lib/config';
 
 export default function PricingSection() {
   const stripeReady = isStripeConfigured();
@@ -80,7 +80,7 @@ export default function PricingSection() {
               ))}
             </ul>
             <a
-              href={stripeReady ? STRIPE_LINKS.pro : '#pricing'}
+              href={stripeReady ? getStripeLink('pro') : '#pricing'}
               target={stripeReady ? '_blank' : undefined}
               rel={stripeReady ? 'noopener noreferrer' : undefined}
               onClick={!stripeReady ? (e) => {
@@ -119,7 +119,7 @@ export default function PricingSection() {
               ))}
             </ul>
             <a
-              href={stripeReady ? STRIPE_LINKS.team : '#pricing'}
+              href={stripeReady ? getStripeLink('team') : '#pricing'}
               target={stripeReady ? '_blank' : undefined}
               rel={stripeReady ? 'noopener noreferrer' : undefined}
               onClick={!stripeReady ? (e) => {

@@ -18,7 +18,7 @@ import {
   incrementScanCount,
   canScan,
 } from '@/lib/storage';
-import { STRIPE_LINKS, isStripeConfigured } from '@/lib/stripe';
+import { config, isStripeConfigured, getStripeLink } from '@/lib/config';
 import { ScanResult, PackageAnalysis } from '@/types';
 import {
   Search,
@@ -171,7 +171,7 @@ export default function ScannerClient() {
             <div className="flex items-center gap-2">
               {plan.tier === 'free' ? (
                 <a
-                  href={isStripeConfigured() ? STRIPE_LINKS.pro : '/#pricing'}
+                  href={isStripeConfigured() ? getStripeLink('pro') : '/#pricing'}
                   target={isStripeConfigured() ? '_blank' : undefined}
                   rel={isStripeConfigured() ? 'noopener noreferrer' : undefined}
                   className="text-xs text-surface-400 bg-surface-800 hover:bg-surface-700 px-2 py-1 rounded transition-colors flex items-center gap-1.5"
@@ -294,7 +294,7 @@ Example:
                 <p className="text-sm text-red-400">{error}</p>
                 {error.includes('free scan limit') && (
                   <a
-                    href={isStripeConfigured() ? STRIPE_LINKS.pro : '/#pricing'}
+                    href={isStripeConfigured() ? getStripeLink('pro') : '/#pricing'}
                     target={isStripeConfigured() ? '_blank' : undefined}
                     rel={isStripeConfigured() ? 'noopener noreferrer' : undefined}
                     className="inline-flex items-center gap-1.5 text-xs text-primary-400 hover:text-primary-300 mt-2 bg-primary-600/10 border border-primary-500/20 px-3 py-1.5 rounded-md transition-colors"
@@ -387,7 +387,7 @@ Example:
                   Found this useful? Consider supporting the project.
                 </p>
                 <a
-                  href="https://buymeacoffee.com/justAbdulaziz10"
+                  href={config.buyMeACoffeeUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 bg-amber-500/10 border border-amber-500/20 text-amber-400 hover:text-amber-300 px-5 py-2.5 rounded-lg text-sm font-medium transition-colors"

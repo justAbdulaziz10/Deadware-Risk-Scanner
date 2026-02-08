@@ -1,8 +1,9 @@
 import type { Metadata } from 'next';
+import { config } from '@/lib/config';
 import './globals.css';
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://deadware-scanner.vercel.app'),
+  metadataBase: new URL(config.siteUrl),
   title: 'Deadware Risk Scanner — Find Abandoned Dependencies Before They Break Your Build',
   description:
     'Scan your package.json, requirements.txt, or Gemfile for abandoned, unmaintained, and risky open-source packages. Get a risk score and actionable replacement suggestions. Free for developers.',
@@ -23,12 +24,12 @@ export const metadata: Metadata = {
     'dependency checker',
     'package vulnerability scanner',
   ],
-  authors: [{ name: 'justAbdulaziz10', url: 'https://github.com/justAbdulaziz10' }],
-  creator: 'justAbdulaziz10',
+  authors: [{ name: config.authorName, url: config.githubUrl }],
+  creator: config.authorName,
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: 'https://deadware-scanner.vercel.app',
+    url: config.siteUrl,
     siteName: 'Deadware Risk Scanner',
     title: 'Deadware Risk Scanner — Find Abandoned Dependencies',
     description:
@@ -60,7 +61,7 @@ export const metadata: Metadata = {
     },
   },
   alternates: {
-    canonical: 'https://deadware-scanner.vercel.app',
+    canonical: config.siteUrl,
   },
 };
 
@@ -75,7 +76,7 @@ export default function RootLayout({
     name: 'Deadware Risk Scanner',
     description:
       'Scan your dependencies for abandoned, unmaintained, and risky open-source packages.',
-    url: 'https://deadware-scanner.vercel.app',
+    url: config.siteUrl,
     applicationCategory: 'DeveloperApplication',
     operatingSystem: 'Web',
     offers: [
@@ -96,8 +97,8 @@ export default function RootLayout({
     ],
     author: {
       '@type': 'Person',
-      name: 'justAbdulaziz10',
-      url: 'https://github.com/justAbdulaziz10',
+      name: config.authorName,
+      url: config.githubUrl,
     },
   };
 
@@ -106,12 +107,13 @@ export default function RootLayout({
       <head>
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <meta name="theme-color" content="#0f172a" />
+        <meta name="color-scheme" content="dark" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className="bg-surface-950 text-surface-100 min-h-screen">
+      <body className="bg-surface-950 text-surface-100 min-h-screen antialiased">
         {children}
       </body>
     </html>
