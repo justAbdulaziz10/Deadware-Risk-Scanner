@@ -37,8 +37,5 @@
     "react-dom": "^19.2.4",
     "tailwindcss": "^4.1.18",
     "typescript": "^5.9.3"
-  },
-  "devDependencies": {
-    "sharp": "^0.34.5"
   }
 }
