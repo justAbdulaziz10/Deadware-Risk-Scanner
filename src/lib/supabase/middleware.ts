@@ -29,7 +29,7 @@ export async function updateSession(request: NextRequest) {
     }
   );
 
-  // Refresh the session — this is the key part
+  // Refresh the session (this is the key part)
   await supabase.auth.getUser();
 
   return supabaseResponse;

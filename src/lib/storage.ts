@@ -10,7 +10,7 @@ function isBrowser(): boolean {
   return typeof window !== 'undefined';
 }
 
-// ---- Scan Results (localStorage — user-local, no auth needed) ----
+// ---- Scan Results (localStorage, user-local, no auth needed) ----
 
 export function saveScanResult(result: ScanResult): void {
   if (!isBrowser()) return;
@@ -42,7 +42,7 @@ export function clearScanHistory(): void {
   localStorage.removeItem(STORAGE_KEYS.SCANS);
 }
 
-// ---- User Settings (localStorage — BYOK tokens stay local) ----
+// ---- User Settings (localStorage, BYOK tokens stay local) ----
 
 export function saveSettings(settings: UserSettings): void {
   if (!isBrowser()) return;
@@ -59,7 +59,7 @@ export function getSettings(): UserSettings {
   }
 }
 
-// ---- User Plan (Supabase — server-verified) ----
+// ---- User Plan (Supabase, server-verified) ----
 
 const FREE_PLAN: UserPlan = {
   tier: 'free',
@@ -132,7 +132,7 @@ export async function incrementScanCount(): Promise<void> {
 
     await supabase.rpc('increment_scan_count', { user_id: user.id });
   } catch {
-    // Silently fail — don't block scanning
+    // Silently fail, don't block scanning
   }
 }
 

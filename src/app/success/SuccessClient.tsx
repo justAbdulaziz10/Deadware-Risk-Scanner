@@ -26,7 +26,7 @@ export default function SuccessClient() {
       if (attempts < maxAttempts) {
         setTimeout(checkPlan, 2000);
       } else {
-        // After 20s, show success anyway — webhook might be delayed
+        // After 20s, show success anyway (webhook might be delayed)
         setPlanName('Pro');
       }
     }

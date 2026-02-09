@@ -1,8 +1,13 @@
+'use client';
+
 import { Shield, Github, Heart, Coffee } from 'lucide-react';
 import Link from 'next/link';
 import { config } from '@/lib/config';
+import { useT } from './I18nProvider';
 
 export default function Footer() {
+  const t = useT();
+
   return (
     <footer className="border-t border-surface-800 bg-surface-950">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -17,8 +22,7 @@ export default function Footer() {
               </span>
             </Link>
             <p className="text-surface-400 text-sm max-w-md mb-4">
-              Free open-source dependency scanner that detects abandoned npm, PyPI, and RubyGems packages.
-              CVE vulnerability scanning, bus factor analysis, deprecation warnings, and replacement suggestions — all running 100% in your browser.
+              {t.footer_desc}
             </p>
             <div className="flex items-center gap-4">
               <a
@@ -45,22 +49,22 @@ export default function Footer() {
           {/* Product */}
           <div>
             <h3 className="text-sm font-semibold text-surface-200 uppercase tracking-wider mb-4">
-              Product
+              {t.footer_product}
             </h3>
             <ul className="space-y-2">
               <li>
                 <Link href="/scanner" className="text-sm text-surface-400 hover:text-surface-100 transition-colors">
-                  Scanner
+                  {t.nav_scanner}
                 </Link>
               </li>
               <li>
                 <Link href="/#features" className="text-sm text-surface-400 hover:text-surface-100 transition-colors">
-                  Features
+                  {t.nav_features}
                 </Link>
               </li>
               <li>
                 <Link href="/#pricing" className="text-sm text-surface-400 hover:text-surface-100 transition-colors">
-                  Pricing
+                  {t.nav_pricing}
                 </Link>
               </li>
               <li>
@@ -70,7 +74,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link href="/#faq" className="text-sm text-surface-400 hover:text-surface-100 transition-colors">
-                  FAQ
+                  {t.nav_faq}
                 </Link>
               </li>
             </ul>
@@ -79,7 +83,7 @@ export default function Footer() {
           {/* Support */}
           <div>
             <h3 className="text-sm font-semibold text-surface-200 uppercase tracking-wider mb-4">
-              Support
+              {t.footer_support}
             </h3>
             <ul className="space-y-2">
               <li>
@@ -89,7 +93,7 @@ export default function Footer() {
                   rel="noopener noreferrer"
                   className="text-sm text-surface-400 hover:text-surface-100 transition-colors"
                 >
-                  Source Code
+                  {t.footer_source}
                 </a>
               </li>
               <li>
@@ -99,7 +103,7 @@ export default function Footer() {
                   rel="noopener noreferrer"
                   className="text-sm text-surface-400 hover:text-surface-100 transition-colors"
                 >
-                  Report a Bug
+                  {t.footer_report_bug}
                 </a>
               </li>
               <li>
@@ -109,7 +113,7 @@ export default function Footer() {
                   rel="noopener noreferrer"
                   className="text-sm text-surface-400 hover:text-surface-100 transition-colors"
                 >
-                  Buy Me a Coffee
+                  {t.footer_coffee}
                 </a>
               </li>
             </ul>
@@ -119,7 +123,7 @@ export default function Footer() {
         {/* Bottom bar */}
         <div className="mt-12 pt-8 border-t border-surface-800 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-sm text-surface-500">
-            &copy; {new Date().getFullYear()} Deadware Risk Scanner. Built by{' '}
+            &copy; {new Date().getFullYear()} Deadware Risk Scanner. {t.cta_built_by}{' '}
             <a
               href={config.githubUrl}
               target="_blank"
@@ -130,7 +134,7 @@ export default function Footer() {
             </a>
           </p>
           <p className="text-sm text-surface-500 flex items-center gap-1">
-            Made with <Heart className="w-3.5 h-3.5 text-red-500 fill-red-500" /> for the open-source community
+            {t.footer_made_with} <Heart className="w-3.5 h-3.5 text-red-500 fill-red-500" /> for the open-source community
           </p>
         </div>
       </div>

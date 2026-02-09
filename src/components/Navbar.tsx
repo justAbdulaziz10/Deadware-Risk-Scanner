@@ -7,12 +7,15 @@ import { Shield, Menu, X, Github, LogOut } from 'lucide-react';
 import { config } from '@/lib/config';
 import { createClient, isSupabaseConfigured } from '@/lib/supabase/client';
 import type { User } from '@supabase/supabase-js';
+import LanguageSwitcher from './LanguageSwitcher';
+import { useT } from './I18nProvider';
 
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const router = useRouter();
   const authEnabled = isSupabaseConfigured();
+  const t = useT();
 
   useEffect(() => {
     if (!authEnabled) return;
@@ -52,16 +55,16 @@ export default function Navbar() {
           {/* Desktop nav */}
           <div className="hidden md:flex items-center gap-6">
             <Link href="/#features" className="text-sm text-surface-400 hover:text-surface-100 transition-colors">
-              Features
+              {t.nav_features}
             </Link>
             <Link href="/#pricing" className="text-sm text-surface-400 hover:text-surface-100 transition-colors">
-              Pricing
+              {t.nav_pricing}
             </Link>
             <Link href="/#how-it-works" className="text-sm text-surface-400 hover:text-surface-100 transition-colors">
               How It Works
             </Link>
             <Link href="/#faq" className="text-sm text-surface-400 hover:text-surface-100 transition-colors">
-              FAQ
+              {t.nav_faq}
             </Link>
             <a
               href={config.githubUrl}
@@ -72,6 +75,7 @@ export default function Navbar() {
             >
               <Github className="w-5 h-5" />
             </a>
+            <LanguageSwitcher />
 
             {user ? (
               <div className="flex items-center gap-3">
@@ -79,7 +83,7 @@ export default function Navbar() {
                   href="/scanner"
                   className="bg-primary-600 hover:bg-primary-500 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
                 >
-                  Scanner
+                  {t.nav_scanner}
                 </Link>
                 <button
                   onClick={handleLogout}
@@ -92,13 +96,13 @@ export default function Navbar() {
             ) : (
               <div className="flex items-center gap-3">
                 <Link href="/login" className="text-sm text-surface-400 hover:text-surface-100 transition-colors">
-                  Log In
+                  {t.nav_login}
                 </Link>
                 <Link
                   href="/signup"
                   className="bg-primary-600 hover:bg-primary-500 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
                 >
-                  Sign Up Free
+                  {t.nav_signup}
                 </Link>
               </div>
             )}
@@ -116,18 +120,21 @@ export default function Navbar() {
         {mobileOpen && (
           <div className="md:hidden pb-4 border-t border-surface-800 mt-2 pt-4 flex flex-col gap-3 animate-fade-in">
             <Link href="/#features" className="text-sm text-surface-400 hover:text-surface-100 transition-colors" onClick={() => setMobileOpen(false)}>
-              Features
+              {t.nav_features}
             </Link>
             <Link href="/#pricing" className="text-sm text-surface-400 hover:text-surface-100 transition-colors" onClick={() => setMobileOpen(false)}>
-              Pricing
+              {t.nav_pricing}
             </Link>
             <Link href="/#how-it-works" className="text-sm text-surface-400 hover:text-surface-100 transition-colors" onClick={() => setMobileOpen(false)}>
               How It Works
             </Link>
+            <div className="py-1">
+              <LanguageSwitcher />
+            </div>
             {user ? (
               <>
                 <Link href="/scanner" className="bg-primary-600 hover:bg-primary-500 text-white px-4 py-2 rounded-lg text-sm font-medium text-center transition-colors" onClick={() => setMobileOpen(false)}>
-                  Scanner
+                  {t.nav_scanner}
                 </Link>
                 <button onClick={() => { handleLogout(); setMobileOpen(false); }} className="text-sm text-surface-400 hover:text-surface-100 transition-colors text-left">
                   Log Out
@@ -136,10 +143,10 @@ export default function Navbar() {
             ) : (
               <>
                 <Link href="/login" className="text-sm text-surface-400 hover:text-surface-100 transition-colors" onClick={() => setMobileOpen(false)}>
-                  Log In
+                  {t.nav_login}
                 </Link>
                 <Link href="/signup" className="bg-primary-600 hover:bg-primary-500 text-white px-4 py-2 rounded-lg text-sm font-medium text-center transition-colors" onClick={() => setMobileOpen(false)}>
-                  Sign Up Free
+                  {t.nav_signup}
                 </Link>
               </>
             )}

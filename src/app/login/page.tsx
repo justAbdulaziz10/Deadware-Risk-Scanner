@@ -4,7 +4,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 
 export const metadata: Metadata = {
-  title: 'Log In — Deadware Risk Scanner',
+  title: 'Log In | Deadware Risk Scanner',
 };
 
 export default function LoginPage() {

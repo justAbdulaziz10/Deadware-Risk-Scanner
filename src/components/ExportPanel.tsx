@@ -118,7 +118,7 @@ export default function ExportPanel({ result }: { result: ScanResult }) {
               Unlock all exports, SBOM, and CI integrations
             </p>
             <p className="text-xs text-surface-500 mt-0.5">
-              Pro plan — just ${config.pricing.proPrice}/mo (vs $399/mo for Snyk)
+              Pro plan: just ${config.pricing.proPrice}/mo (vs $399/mo for Snyk)
             </p>
           </div>
           <a

@@ -32,7 +32,7 @@ export default function ComparisonSection() {
             How We <span className="gradient-text">Compare</span>
           </h2>
           <p className="text-surface-400 text-lg max-w-2xl mx-auto">
-            Most security tools focus only on CVEs. Deadware Risk Scanner goes further — detecting abandoned packages before they become a problem.
+            Most security tools focus only on CVEs. Deadware Risk Scanner goes further, detecting abandoned packages before they become a problem.
           </p>
         </div>
 

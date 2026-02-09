@@ -675,7 +675,7 @@ export default function ScannerClient() {
                     className="inline-flex items-center gap-1.5 text-xs text-primary-400 hover:text-primary-300 mt-2 bg-primary-600/10 border border-primary-500/20 px-3 py-1.5 rounded-md transition-colors"
                   >
                     <Crown className="w-3 h-3" />
-                    Upgrade to Pro — Unlimited scans for ${config.pricing.proPrice}/mo
+                    Upgrade to Pro: Unlimited scans for ${config.pricing.proPrice}/mo
                   </a>
                 )}
               </div>
@@ -708,7 +708,7 @@ export default function ScannerClient() {
             <div className="space-y-6 animate-slide-up">
               <ScanSummaryCard summary={result.summary} />
 
-              {/* Smart upgrade prompt — contextual based on scan findings */}
+              {/* Smart upgrade prompt - contextual based on scan findings */}
               {plan.tier === 'free' && (
                 <div className="bg-gradient-to-r from-primary-600/10 via-purple-600/10 to-primary-600/10 border border-primary-500/20 rounded-xl p-5">
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -717,14 +717,14 @@ export default function ScannerClient() {
                         <Crown className="w-4 h-4 text-amber-400" />
                         <p className="text-sm font-semibold text-surface-200">
                           {result.summary.totalVulnerabilities > 0
-                            ? `${result.summary.totalVulnerabilities} vulnerabilit${result.summary.totalVulnerabilities === 1 ? 'y' : 'ies'} found — export a full report`
+                            ? `${result.summary.totalVulnerabilities} vulnerabilit${result.summary.totalVulnerabilities === 1 ? 'y' : 'ies'} found. Export a full report`
                             : result.summary.critical + result.summary.high > 0
                             ? `${result.summary.critical + result.summary.high} high-risk packages detected`
                             : 'Unlock PDF reports, SBOM, and CI integration'}
                         </p>
                       </div>
                       <p className="text-xs text-surface-400">
-                        Pro gives you PDF/CSV/JSON exports, CycloneDX SBOM, GitHub Actions CI workflow, and unlimited scans — for just ${config.pricing.proPrice}/mo
+                        Pro gives you PDF/CSV/JSON exports, CycloneDX SBOM, GitHub Actions CI workflow, and unlimited scans for just ${config.pricing.proPrice}/mo
                         <span className="text-surface-600"> (vs $399/mo for Snyk)</span>
                       </p>
                     </div>
