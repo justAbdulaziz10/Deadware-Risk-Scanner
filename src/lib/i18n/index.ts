@@ -3,11 +3,16 @@ import en from './en';
 
 const translationModules: Record<Locale, () => Promise<{ default: Translations }>> = {
   en: () => Promise.resolve({ default: en }),
+  ar: () => import('./ar'),
   zh: () => import('./zh'),
+  de: () => import('./de'),
   es: () => import('./es'),
-  pt: () => import('./pt'),
-  ja: () => import('./ja'),
+  fr: () => import('./fr'),
   hi: () => import('./hi'),
+  ja: () => import('./ja'),
+  ko: () => import('./ko'),
+  pt: () => import('./pt'),
+  ru: () => import('./ru'),
 };
 
 const cache: Partial<Record<Locale, Translations>> = { en };
@@ -28,7 +33,7 @@ const STORAGE_KEY = 'deadware_locale';
 export function getSavedLocale(): Locale {
   if (typeof window === 'undefined') return DEFAULT_LOCALE;
   const saved = localStorage.getItem(STORAGE_KEY);
-  if (saved && ['en', 'zh', 'es', 'pt', 'ja', 'hi'].includes(saved)) {
+  if (saved && ['en', 'ar', 'zh', 'de', 'es', 'fr', 'hi', 'ja', 'ko', 'pt', 'ru'].includes(saved)) {
     return saved as Locale;
   }
   // Always default to English regardless of browser language

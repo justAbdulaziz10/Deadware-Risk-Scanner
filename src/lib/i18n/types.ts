@@ -1,20 +1,28 @@
-export type Locale = 'en' | 'zh' | 'es' | 'pt' | 'ja' | 'hi';
+export type Locale = 'en' | 'zh' | 'es' | 'pt' | 'ja' | 'hi' | 'ar' | 'fr' | 'de' | 'ru' | 'ko';
 
 export interface LocaleInfo {
   code: Locale;
   name: string;
   nativeName: string;
   flag: string;
+  rtl?: boolean;
 }
 
 export const LOCALES: LocaleInfo[] = [
   { code: 'en', name: 'English', nativeName: 'English', flag: 'EN' },
+  { code: 'ar', name: 'Arabic', nativeName: 'العربية', flag: 'AR', rtl: true },
   { code: 'zh', name: 'Chinese', nativeName: '中文', flag: 'ZH' },
-  { code: 'es', name: 'Spanish', nativeName: 'Español', flag: 'ES' },
-  { code: 'pt', name: 'Portuguese', nativeName: 'Português', flag: 'PT' },
-  { code: 'ja', name: 'Japanese', nativeName: '日本語', flag: 'JA' },
+  { code: 'fr', name: 'French', nativeName: 'Français', flag: 'FR' },
+  { code: 'de', name: 'German', nativeName: 'Deutsch', flag: 'DE' },
   { code: 'hi', name: 'Hindi', nativeName: 'हिन्दी', flag: 'HI' },
+  { code: 'ja', name: 'Japanese', nativeName: '日本語', flag: 'JA' },
+  { code: 'ko', name: 'Korean', nativeName: '한국어', flag: 'KO' },
+  { code: 'pt', name: 'Portuguese', nativeName: 'Português', flag: 'PT' },
+  { code: 'ru', name: 'Russian', nativeName: 'Русский', flag: 'RU' },
+  { code: 'es', name: 'Spanish', nativeName: 'Español', flag: 'ES' },
 ];
+
+export const RTL_LOCALES: Locale[] = ['ar'];
 
 export const DEFAULT_LOCALE: Locale = 'en';
 
