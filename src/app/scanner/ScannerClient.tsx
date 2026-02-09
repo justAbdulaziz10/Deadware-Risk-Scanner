@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import PackageCard from '@/components/PackageCard';
@@ -9,6 +9,7 @@ import ExportPanel from '@/components/ExportPanel';
 import SettingsPanel from '@/components/SettingsPanel';
 import { parseInput, detectEcosystem } from '@/lib/parsers';
 import { analyzeDependencies, createScanResult } from '@/lib/analyzer';
+import { fetchDepFilesFromRepo, fetchUserRepos, type GitHubRepo } from '@/lib/github';
 import {
   saveScanResult,
   getScanHistory,
@@ -31,9 +32,15 @@ import {
   ArrowUpDown,
   Crown,
   Coffee,
+  Upload,
+  Github,
+  Link2,
+  FileText,
+  FolderOpen,
 } from 'lucide-react';
 
 type SortKey = 'risk' | 'name' | 'release';
+type InputMode = 'paste' | 'upload' | 'github-url' | 'github-repos';
 
 const SAMPLE_INPUT = `{
   "dependencies": {
@@ -52,6 +59,7 @@ const SAMPLE_INPUT = `{
 
 export default function ScannerClient() {
   const [input, setInput] = useState('');
+  const [inputMode, setInputMode] = useState<InputMode>('paste');
   const [scanning, setScanning] = useState(false);
   const [progress, setProgress] = useState({ completed: 0, total: 0 });
   const [result, setResult] = useState<ScanResult | null>(null);
@@ -62,6 +70,20 @@ export default function ScannerClient() {
   const [filterLevel, setFilterLevel] = useState<string>('all');
   const [error, setError] = useState<string | null>(null);
 
+  // File upload
+  const [dragOver, setDragOver] = useState(false);
+  const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // GitHub URL
+  const [repoUrl, setRepoUrl] = useState('');
+
+  // GitHub repos
+  const [repos, setRepos] = useState<GitHubRepo[]>([]);
+  const [loadingRepos, setLoadingRepos] = useState(false);
+  const [repoSearch, setRepoSearch] = useState('');
+  const [selectedRepo, setSelectedRepo] = useState<string | null>(null);
+
   const [plan, setPlan] = useState<UserPlan>({ tier: 'free', scansUsed: 0, maxScans: 5, features: [] });
 
   useEffect(() => {
@@ -69,17 +91,67 @@ export default function ScannerClient() {
     fetchUserPlan().then(setPlan);
   }, []);
 
-  const handleScan = useCallback(async () => {
-    if (!input.trim()) {
-      setError('Please paste a dependency file to scan.');
+  // --- File handling ---
+  function handleFileContent(file: File) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const content = e.target?.result as string;
+      setInput(content);
+      setUploadedFileName(file.name);
+      setError(null);
+    };
+    reader.readAsText(file);
+  }
+
+  function handleFileDrop(e: React.DragEvent) {
+    e.preventDefault();
+    setDragOver(false);
+    const file = e.dataTransfer.files[0];
+    if (file) handleFileContent(file);
+  }
+
+  function handleFileSelect(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (file) handleFileContent(file);
+  }
+
+  // --- GitHub repos loading ---
+  async function loadRepos() {
+    const settings = getSettings();
+    if (!settings.githubToken) {
+      setError('Add your GitHub token in Settings first, then come back to select a repo.');
+      setShowSettings(true);
       return;
     }
 
+    setLoadingRepos(true);
+    setError(null);
+    try {
+      const data = await fetchUserRepos(settings.githubToken);
+      setRepos(data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load repos.');
+    } finally {
+      setLoadingRepos(false);
+    }
+  }
+
+  useEffect(() => {
+    if (inputMode === 'github-repos' && repos.length === 0) {
+      loadRepos();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [inputMode]);
+
+  const filteredRepos = repos.filter((r) =>
+    r.full_name.toLowerCase().includes(repoSearch.toLowerCase())
+  );
+
+  // --- Scan ---
+  const handleScan = useCallback(async () => {
     const allowed = await canScan();
     if (!allowed) {
-      setError(
-        'You have reached your free scan limit. Upgrade to Pro for unlimited scans.'
-      );
+      setError('You have reached your free scan limit. Upgrade to Pro for unlimited scans.');
       return;
     }
 
@@ -89,10 +161,35 @@ export default function ScannerClient() {
     setResult(null);
 
     try {
-      const packages = parseInput(input);
+      let contentToScan = input;
+
+      // For GitHub modes, fetch dependency files first
+      if (inputMode === 'github-url' || inputMode === 'github-repos') {
+        const url = inputMode === 'github-url' ? repoUrl : selectedRepo || '';
+        if (!url.trim()) {
+          setError(inputMode === 'github-url'
+            ? 'Enter a GitHub repository URL.'
+            : 'Select a repository first.');
+          setScanning(false);
+          return;
+        }
+
+        const settings = getSettings();
+        const files = await fetchDepFilesFromRepo(url, settings.githubToken);
+        contentToScan = files.map((f) => f.content).join('\n');
+        setInput(contentToScan);
+      }
+
+      if (!contentToScan.trim()) {
+        setError('No dependency content to scan. Paste, upload, or select a source.');
+        setScanning(false);
+        return;
+      }
+
+      const packages = parseInput(contentToScan);
       if (packages.length === 0) {
         setError(
-          'No packages found. Make sure you paste a valid package.json, requirements.txt, Gemfile, go.mod, or Cargo.toml.'
+          'No packages found. Make sure you provide a valid package.json, requirements.txt, Gemfile, go.mod, or Cargo.toml.'
         );
         setScanning(false);
         return;
@@ -107,8 +204,8 @@ export default function ScannerClient() {
         (completed, total) => setProgress({ completed, total })
       );
 
-      const ecosystem = detectEcosystem(input);
-      const scanResult = createScanResult(analyses, ecosystem, input);
+      const ecosystem = detectEcosystem(contentToScan);
+      const scanResult = createScanResult(analyses, ecosystem, contentToScan);
       setResult(scanResult);
       saveScanResult(scanResult);
       await incrementScanCount();
@@ -119,7 +216,7 @@ export default function ScannerClient() {
     } finally {
       setScanning(false);
     }
-  }, [input]);
+  }, [input, inputMode, repoUrl, selectedRepo]);
 
   function handleLoadHistory(scan: ScanResult) {
     setResult(scan);
@@ -134,8 +231,16 @@ export default function ScannerClient() {
 
   function loadSample() {
     setInput(SAMPLE_INPUT);
+    setInputMode('paste');
     setError(null);
   }
+
+  const canClickScan =
+    inputMode === 'paste' ? input.trim().length > 0 :
+    inputMode === 'upload' ? input.trim().length > 0 :
+    inputMode === 'github-url' ? repoUrl.trim().length > 0 :
+    inputMode === 'github-repos' ? !!selectedRepo :
+    false;
 
   // Sort and filter
   const sortedPackages = result
@@ -168,7 +273,7 @@ export default function ScannerClient() {
             <div>
               <h1 className="text-2xl font-bold">Dependency Scanner</h1>
               <p className="text-sm text-surface-400 mt-1">
-                Paste your dependency file below to scan for deadware risk
+                Scan your dependencies for abandoned &amp; risky packages
               </p>
             </div>
             <div className="flex items-center gap-2">
@@ -252,40 +357,205 @@ export default function ScannerClient() {
             </div>
           )}
 
-          {/* Input area */}
-          <div className="mb-6">
-            <div className="flex items-center justify-between mb-2">
-              <label className="text-sm font-medium text-surface-300">
-                Dependency File Content
-              </label>
+          {/* ===== INPUT MODE TABS ===== */}
+          <div className="flex gap-1 mb-4 bg-surface-900/50 border border-surface-800 rounded-xl p-1">
+            {([
+              { key: 'paste' as const, icon: FileText, label: 'Paste' },
+              { key: 'upload' as const, icon: Upload, label: 'Upload File' },
+              { key: 'github-url' as const, icon: Link2, label: 'Repo URL' },
+              { key: 'github-repos' as const, icon: Github, label: 'My Repos' },
+            ]).map(({ key, icon: Icon, label }) => (
               <button
-                onClick={loadSample}
-                className="text-xs text-primary-400 hover:text-primary-300 transition-colors"
+                key={key}
+                onClick={() => { setInputMode(key); setError(null); }}
+                className={`flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                  inputMode === key
+                    ? 'bg-primary-600/20 text-primary-400 border border-primary-500/30'
+                    : 'text-surface-400 hover:text-surface-200 hover:bg-surface-800'
+                }`}
               >
-                Load sample package.json
+                <Icon className="w-4 h-4" />
+                <span className="hidden sm:inline">{label}</span>
               </button>
-            </div>
-            <textarea
-              value={input}
-              onChange={(e) => {
-                setInput(e.target.value);
-                setError(null);
-              }}
-              placeholder={`Paste your package.json, requirements.txt, Gemfile, go.mod, or Cargo.toml here...
-
-Example:
-{
-  "dependencies": {
-    "react": "^18.2.0",
-    "moment": "^2.29.4",
-    "request": "^2.88.2"
-  }
-}`}
-              rows={10}
-              className="w-full bg-surface-900 border border-surface-700 rounded-xl px-4 py-3 text-sm text-surface-200 placeholder:text-surface-600 font-mono focus:outline-none focus:border-primary-500 resize-y"
-              spellCheck={false}
-            />
+            ))}
           </div>
+
+          {/* ===== PASTE MODE ===== */}
+          {inputMode === 'paste' && (
+            <div className="mb-6">
+              <div className="flex items-center justify-between mb-2">
+                <label className="text-sm font-medium text-surface-300">
+                  Dependency File Content
+                </label>
+                <button
+                  onClick={loadSample}
+                  className="text-xs text-primary-400 hover:text-primary-300 transition-colors"
+                >
+                  Load sample package.json
+                </button>
+              </div>
+              <textarea
+                value={input}
+                onChange={(e) => { setInput(e.target.value); setError(null); }}
+                placeholder={`Paste your package.json, requirements.txt, Gemfile, go.mod, or Cargo.toml here...`}
+                rows={10}
+                className="w-full bg-surface-900 border border-surface-700 rounded-xl px-4 py-3 text-sm text-surface-200 placeholder:text-surface-600 font-mono focus:outline-none focus:border-primary-500 resize-y"
+                spellCheck={false}
+              />
+            </div>
+          )}
+
+          {/* ===== UPLOAD MODE ===== */}
+          {inputMode === 'upload' && (
+            <div className="mb-6">
+              <div
+                onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+                onDragLeave={() => setDragOver(false)}
+                onDrop={handleFileDrop}
+                onClick={() => fileInputRef.current?.click()}
+                className={`border-2 border-dashed rounded-xl p-10 text-center cursor-pointer transition-colors ${
+                  dragOver
+                    ? 'border-primary-500 bg-primary-600/10'
+                    : uploadedFileName
+                    ? 'border-emerald-500/40 bg-emerald-500/5'
+                    : 'border-surface-700 hover:border-surface-500 bg-surface-900/50'
+                }`}
+              >
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  onChange={handleFileSelect}
+                  accept=".json,.txt,.toml,.mod"
+                  className="hidden"
+                />
+                {uploadedFileName ? (
+                  <div className="space-y-2">
+                    <FolderOpen className="w-10 h-10 text-emerald-400 mx-auto" />
+                    <p className="text-surface-200 font-medium">{uploadedFileName}</p>
+                    <p className="text-xs text-surface-500">File loaded. Click &quot;Scan Dependencies&quot; below.</p>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setUploadedFileName(null);
+                        setInput('');
+                      }}
+                      className="text-xs text-red-400 hover:text-red-300 mt-2"
+                    >
+                      Remove file
+                    </button>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <Upload className="w-10 h-10 text-surface-500 mx-auto" />
+                    <p className="text-surface-300 font-medium">
+                      Drop a dependency file here or click to browse
+                    </p>
+                    <p className="text-xs text-surface-500">
+                      Supports: package.json, requirements.txt, Gemfile, go.mod, Cargo.toml
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* ===== GITHUB URL MODE ===== */}
+          {inputMode === 'github-url' && (
+            <div className="mb-6">
+              <label className="text-sm font-medium text-surface-300 mb-2 block">
+                Public GitHub Repository URL
+              </label>
+              <div className="relative">
+                <Link2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-500" />
+                <input
+                  type="text"
+                  value={repoUrl}
+                  onChange={(e) => { setRepoUrl(e.target.value); setError(null); }}
+                  placeholder="https://github.com/owner/repo"
+                  className="w-full bg-surface-900 border border-surface-700 rounded-xl pl-10 pr-4 py-3 text-sm text-surface-200 placeholder:text-surface-600 focus:outline-none focus:border-primary-500"
+                />
+              </div>
+              <p className="text-xs text-surface-500 mt-2">
+                We&apos;ll automatically find and scan dependency files (package.json, requirements.txt, etc.) from the repo.
+              </p>
+            </div>
+          )}
+
+          {/* ===== GITHUB REPOS MODE ===== */}
+          {inputMode === 'github-repos' && (
+            <div className="mb-6">
+              {loadingRepos ? (
+                <div className="text-center py-10 bg-surface-900/50 border border-surface-800 rounded-xl">
+                  <Loader2 className="w-8 h-8 text-primary-500 mx-auto mb-3 animate-spin" />
+                  <p className="text-sm text-surface-400">Loading your repositories...</p>
+                </div>
+              ) : repos.length === 0 ? (
+                <div className="text-center py-10 bg-surface-900/50 border border-surface-800 rounded-xl">
+                  <Github className="w-10 h-10 text-surface-500 mx-auto mb-3" />
+                  <p className="text-surface-300 font-medium mb-2">Connect your GitHub account</p>
+                  <p className="text-xs text-surface-500 mb-4">
+                    Add your GitHub token in Settings to see your repos here.
+                  </p>
+                  <button
+                    onClick={() => setShowSettings(true)}
+                    className="text-xs text-primary-400 hover:text-primary-300 bg-primary-600/10 border border-primary-500/20 px-4 py-2 rounded-lg transition-colors"
+                  >
+                    Open Settings
+                  </button>
+                </div>
+              ) : (
+                <div className="bg-surface-900/50 border border-surface-800 rounded-xl p-4">
+                  <div className="relative mb-3">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-500" />
+                    <input
+                      type="text"
+                      value={repoSearch}
+                      onChange={(e) => setRepoSearch(e.target.value)}
+                      placeholder="Search your repos..."
+                      className="w-full bg-surface-800 border border-surface-700 rounded-lg pl-10 pr-4 py-2.5 text-sm text-surface-200 placeholder:text-surface-600 focus:outline-none focus:border-primary-500"
+                    />
+                  </div>
+                  <div className="space-y-1 max-h-72 overflow-y-auto">
+                    {filteredRepos.map((repo) => (
+                      <button
+                        key={repo.full_name}
+                        onClick={() => { setSelectedRepo(repo.full_name); setError(null); }}
+                        className={`w-full text-left px-3 py-2.5 rounded-lg text-sm transition-colors flex items-center justify-between ${
+                          selectedRepo === repo.full_name
+                            ? 'bg-primary-600/20 border border-primary-500/30 text-primary-400'
+                            : 'hover:bg-surface-800 text-surface-300'
+                        }`}
+                      >
+                        <div className="min-w-0">
+                          <span className="font-medium block truncate">{repo.full_name}</span>
+                          {repo.description && (
+                            <span className="text-xs text-surface-500 block truncate">{repo.description}</span>
+                          )}
+                        </div>
+                        {repo.private && (
+                          <span className="text-[10px] bg-surface-700 text-surface-400 px-1.5 py-0.5 rounded shrink-0 ml-2">
+                            Private
+                          </span>
+                        )}
+                      </button>
+                    ))}
+                    {filteredRepos.length === 0 && (
+                      <p className="text-sm text-surface-500 text-center py-4">No repos match &quot;{repoSearch}&quot;</p>
+                    )}
+                  </div>
+                  <div className="flex items-center justify-between mt-3 pt-3 border-t border-surface-700">
+                    <span className="text-xs text-surface-500">{repos.length} repos loaded</span>
+                    <button
+                      onClick={loadRepos}
+                      className="text-xs text-primary-400 hover:text-primary-300 transition-colors"
+                    >
+                      Refresh
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Error */}
           {error && (
@@ -309,13 +579,15 @@ Example:
           {/* Scan button */}
           <button
             onClick={handleScan}
-            disabled={scanning || !input.trim()}
+            disabled={scanning || !canClickScan}
             className="w-full bg-primary-600 hover:bg-primary-500 disabled:bg-surface-700 disabled:cursor-not-allowed text-white py-3.5 rounded-xl font-semibold flex items-center justify-center gap-2 transition-colors mb-8"
           >
             {scanning ? (
               <>
                 <Loader2 className="w-5 h-5 animate-spin" />
-                Scanning... ({progress.completed}/{progress.total})
+                {progress.total > 0
+                  ? `Scanning... (${progress.completed}/${progress.total})`
+                  : 'Fetching dependencies...'}
               </>
             ) : (
               <>
@@ -328,13 +600,9 @@ Example:
           {/* Results */}
           {result && (
             <div className="space-y-6 animate-slide-up">
-              {/* Summary */}
               <ScanSummaryCard summary={result.summary} />
-
-              {/* Export */}
               <ExportPanel result={result} />
 
-              {/* Filters & Sort */}
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div className="flex items-center gap-2 flex-wrap">
                   <span className="text-sm text-surface-400">Filter:</span>
@@ -366,7 +634,6 @@ Example:
                 </div>
               </div>
 
-              {/* Package list */}
               <div className="space-y-3 stagger-children">
                 {sortedPackages.length === 0 ? (
                   <div className="text-center py-12 text-surface-500">
@@ -380,7 +647,6 @@ Example:
                 )}
               </div>
 
-              {/* Support CTA */}
               <div className="text-center py-8 border-t border-surface-800">
                 <p className="text-sm text-surface-500 mb-3">
                   Found this useful? Consider supporting the project.
