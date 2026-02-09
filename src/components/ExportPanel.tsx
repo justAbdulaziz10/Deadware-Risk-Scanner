@@ -25,8 +25,10 @@ import {
   Crown,
 } from 'lucide-react';
 import { useState } from 'react';
+import { useT } from './I18nProvider';
 
 export default function ExportPanel({ result }: { result: ScanResult }) {
+  const t = useT();
   const [copiedItem, setCopiedItem] = useState<string | null>(null);
   const plan = getUserPlan();
   const isPaid = plan.tier !== 'free';
@@ -43,7 +45,7 @@ export default function ExportPanel({ result }: { result: ScanResult }) {
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold flex items-center gap-2">
           <Download className="w-5 h-5 text-primary-500" />
-          Export, Share &amp; Integrate
+          {t.export_title}
         </h3>
         {/* Free share button */}
         <button
@@ -51,7 +53,7 @@ export default function ExportPanel({ result }: { result: ScanResult }) {
           className="flex items-center gap-1.5 text-xs bg-primary-600/10 border border-primary-500/20 text-primary-400 hover:text-primary-300 px-3 py-1.5 rounded-lg transition-colors"
         >
           <Share2 className="w-3.5 h-3.5" />
-          {copiedItem === 'share' ? 'Copied!' : 'Share Results'}
+          {copiedItem === 'share' ? t.export_copied : t.export_share}
         </button>
       </div>
 
@@ -62,7 +64,7 @@ export default function ExportPanel({ result }: { result: ScanResult }) {
           locked={!isPaid}
           icon={<FileJson className="w-7 h-7 text-blue-400 shrink-0" />}
           label="JSON"
-          desc="Machine-readable"
+          desc={t.export_json_desc}
         />
 
         {/* CSV */}
@@ -71,7 +73,7 @@ export default function ExportPanel({ result }: { result: ScanResult }) {
           locked={!isPaid}
           icon={<Table2 className="w-7 h-7 text-green-400 shrink-0" />}
           label="CSV"
-          desc="For spreadsheets"
+          desc={t.export_csv_desc}
         />
 
         {/* PDF */}
@@ -80,7 +82,7 @@ export default function ExportPanel({ result }: { result: ScanResult }) {
           locked={!isPaid}
           icon={<FileText className="w-7 h-7 text-purple-400 shrink-0" />}
           label="PDF Report"
-          desc="For stakeholders"
+          desc={t.export_pdf_desc}
         />
 
         {/* SBOM (CycloneDX) */}
@@ -88,8 +90,8 @@ export default function ExportPanel({ result }: { result: ScanResult }) {
           onClick={() => isPaid && exportToSBOM(result)}
           locked={!isPaid}
           icon={<Shield className="w-7 h-7 text-cyan-400 shrink-0" />}
-          label={copiedItem === 'sbom' ? 'Exported!' : 'SBOM'}
-          desc="CycloneDX format"
+          label={copiedItem === 'sbom' ? t.export_exported : 'SBOM'}
+          desc={t.export_sbom_desc}
         />
 
         {/* CI Badge */}
@@ -97,8 +99,8 @@ export default function ExportPanel({ result }: { result: ScanResult }) {
           onClick={() => isPaid && handleCopy('badge', () => navigator.clipboard.writeText(badgeMarkdown))}
           locked={!isPaid}
           icon={<Badge className="w-7 h-7 text-emerald-400 shrink-0" />}
-          label={copiedItem === 'badge' ? 'Copied!' : 'CI Badge'}
-          desc="README badge"
+          label={copiedItem === 'badge' ? t.export_copied : 'CI Badge'}
+          desc={t.export_badge_desc}
         />
 
         {/* GitHub Actions */}
@@ -106,8 +108,8 @@ export default function ExportPanel({ result }: { result: ScanResult }) {
           onClick={() => isPaid && handleCopy('ci', () => copyGitHubActionsYAML(result.ecosystem))}
           locked={!isPaid}
           icon={<GitBranch className="w-7 h-7 text-orange-400 shrink-0" />}
-          label={copiedItem === 'ci' ? 'Copied!' : 'CI Workflow'}
-          desc="GitHub Actions YAML"
+          label={copiedItem === 'ci' ? t.export_copied : 'CI Workflow'}
+          desc={t.export_ci_desc}
         />
       </div>
 
@@ -115,10 +117,10 @@ export default function ExportPanel({ result }: { result: ScanResult }) {
         <div className="mt-4 bg-primary-600/5 border border-primary-500/15 rounded-lg p-4 flex items-center justify-between">
           <div>
             <p className="text-sm text-surface-300">
-              Unlock all exports, SBOM, and CI integrations
+              {t.export_unlock}
             </p>
             <p className="text-xs text-surface-500 mt-0.5">
-              Pro plan: just ${config.pricing.proPrice}/mo (vs $399/mo for Snyk)
+              {`${t.export_pro_hint}: $${config.pricing.proPrice}${t.pricing_per_month}`}
             </p>
           </div>
           <a
@@ -126,7 +128,7 @@ export default function ExportPanel({ result }: { result: ScanResult }) {
             className="flex items-center gap-1.5 bg-primary-600 hover:bg-primary-500 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors shrink-0"
           >
             <Crown className="w-3.5 h-3.5" />
-            Upgrade
+            {t.export_upgrade}
           </a>
         </div>
       )}

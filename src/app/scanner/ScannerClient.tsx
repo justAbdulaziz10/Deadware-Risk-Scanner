@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { useT } from '@/components/I18nProvider';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import PackageCard from '@/components/PackageCard';
@@ -130,6 +131,7 @@ black==23.9.1`,
 ];
 
 export default function ScannerClient() {
+  const t = useT();
   const [input, setInput] = useState('');
   const [inputMode, setInputMode] = useState<InputMode>('paste');
   const [scanning, setScanning] = useState(false);
@@ -158,6 +160,12 @@ export default function ScannerClient() {
   const [selectedRepo, setSelectedRepo] = useState<string | null>(null);
 
   const [plan, setPlan] = useState<UserPlan>({ tier: 'free', scansUsed: 0, maxScans: 5, features: [] });
+
+  const templates = QUICK_TEMPLATES.map((tpl, i) => ({
+    ...tpl,
+    label: [t.scan_tpl_react, t.scan_tpl_legacy, t.scan_tpl_python, t.scan_tpl_nextjs][i],
+    desc: [t.scan_tpl_react_desc, t.scan_tpl_legacy_desc, t.scan_tpl_python_desc, t.scan_tpl_nextjs_desc][i],
+  }));
 
   useEffect(() => {
     setHistory(getScanHistory());
@@ -203,7 +211,7 @@ export default function ScannerClient() {
   async function loadRepos() {
     const settings = getSettings();
     if (!settings.githubToken) {
-      setError('Add your GitHub token in Settings first, then come back to select a repo.');
+      setError(t.scan_add_token);
       setShowSettings(true);
       return;
     }
@@ -235,7 +243,7 @@ export default function ScannerClient() {
   const handleScan = useCallback(async () => {
     const allowed = await canScan();
     if (!allowed) {
-      setError('You have reached your free scan limit. Upgrade to Pro for unlimited scans.');
+      setError(t.scan_error_limit);
       return;
     }
 
@@ -252,8 +260,8 @@ export default function ScannerClient() {
         const url = inputMode === 'github-url' ? repoUrl : selectedRepo || '';
         if (!url.trim()) {
           setError(inputMode === 'github-url'
-            ? 'Enter a GitHub repository URL.'
-            : 'Select a repository first.');
+            ? t.scan_error_no_url
+            : t.scan_error_select_repo);
           setScanning(false);
           return;
         }
@@ -265,16 +273,14 @@ export default function ScannerClient() {
       }
 
       if (!contentToScan.trim()) {
-        setError('No dependency content to scan. Paste, upload, or select a source.');
+        setError(t.scan_error_no_content);
         setScanning(false);
         return;
       }
 
       const packages = parseInput(contentToScan);
       if (packages.length === 0) {
-        setError(
-          'No packages found. Make sure you provide a valid package.json, requirements.txt, Gemfile, go.mod, or Cargo.toml.'
-        );
+        setError(t.scan_error_no_packages);
         setScanning(false);
         return;
       }
@@ -358,9 +364,9 @@ export default function ScannerClient() {
           {/* Header */}
           <div className="flex items-center justify-between mb-6 mt-4">
             <div>
-              <h1 className="text-2xl font-bold">Dependency Scanner</h1>
+              <h1 className="text-2xl font-bold">{t.scan_title}</h1>
               <p className="text-sm text-surface-400 mt-1">
-                Scan your dependencies for abandoned &amp; risky packages
+                {t.scan_subtitle}
               </p>
             </div>
             <div className="flex items-center gap-2">
@@ -369,7 +375,7 @@ export default function ScannerClient() {
                   href={isPolarConfigured() ? getCheckoutUrl('pro') : '/#pricing'}
                   className="text-xs text-surface-400 bg-surface-800 hover:bg-surface-700 px-2 py-1 rounded transition-colors flex items-center gap-1.5"
                 >
-                  {plan.scansUsed}/{plan.maxScans} free scans
+                  {plan.scansUsed}/{plan.maxScans} {t.common_free_scans}
                   <Crown className="w-3 h-3 text-amber-400" />
                 </a>
               ) : (
@@ -381,14 +387,14 @@ export default function ScannerClient() {
               <button
                 onClick={() => setShowHistory(!showHistory)}
                 className="p-2 rounded-lg border border-surface-700 hover:bg-surface-800 text-surface-400 hover:text-surface-200 transition-colors"
-                title="Scan History"
+                title={t.scan_history}
               >
                 <History className="w-4 h-4" />
               </button>
               <button
                 onClick={() => setShowSettings(!showSettings)}
                 className="p-2 rounded-lg border border-surface-700 hover:bg-surface-800 text-surface-400 hover:text-surface-200 transition-colors"
-                title="Settings"
+                title={t.scan_settings}
               >
                 <Settings className="w-4 h-4" />
               </button>
@@ -407,10 +413,10 @@ export default function ScannerClient() {
             <div className="mb-6 bg-surface-900/50 border border-surface-800 rounded-xl p-6 animate-fade-in">
               <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
                 <History className="w-5 h-5 text-primary-500" />
-                Scan History
+                {t.scan_history}
               </h3>
               {history.length === 0 ? (
-                <p className="text-sm text-surface-500">No previous scans.</p>
+                <p className="text-sm text-surface-500">{t.scan_no_history}</p>
               ) : (
                 <div className="space-y-2 max-h-64 overflow-y-auto">
                   {history.map((scan) => (
@@ -423,11 +429,11 @@ export default function ScannerClient() {
                         className="text-left flex-1 min-w-0"
                       >
                         <span className="text-sm text-surface-200 font-medium">
-                          {scan.summary.totalPackages} packages &middot;{' '}
+                          {scan.summary.totalPackages} {t.scan_packages} &middot;{' '}
                           {scan.ecosystem.toUpperCase()}
                         </span>
                         <span className="text-xs text-surface-500 block">
-                          Health: {scan.summary.overallHealthScore}/100 &middot;{' '}
+                          {t.scan_health}: {scan.summary.overallHealthScore}/100 &middot;{' '}
                           {new Date(scan.createdAt).toLocaleString()}
                         </span>
                       </button>
@@ -447,10 +453,10 @@ export default function ScannerClient() {
           {/* ===== INPUT MODE TABS ===== */}
           <div className="flex gap-1 mb-4 bg-surface-900/50 border border-surface-800 rounded-xl p-1">
             {([
-              { key: 'paste' as const, icon: FileText, label: 'Paste' },
-              { key: 'upload' as const, icon: Upload, label: 'Upload File' },
-              { key: 'github-url' as const, icon: Link2, label: 'Repo URL' },
-              { key: 'github-repos' as const, icon: Github, label: 'My Repos' },
+              { key: 'paste' as const, icon: FileText, label: t.scan_paste },
+              { key: 'upload' as const, icon: Upload, label: t.scan_upload },
+              { key: 'github-url' as const, icon: Link2, label: t.scan_repo_url },
+              { key: 'github-repos' as const, icon: Github, label: t.scan_my_repos },
             ]).map(({ key, icon: Icon, label }) => (
               <button
                 key={key}
@@ -470,16 +476,16 @@ export default function ScannerClient() {
           {/* Quick-scan templates */}
           {inputMode === 'paste' && !input.trim() && !result && (
             <div className="mb-4">
-              <p className="text-xs text-surface-500 mb-2">Quick scan a template:</p>
+              <p className="text-xs text-surface-500 mb-2">{t.scan_template_label}</p>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                {QUICK_TEMPLATES.map((t) => (
+                {templates.map((tpl) => (
                   <button
-                    key={t.label}
-                    onClick={() => { setInput(t.content); setError(null); }}
+                    key={tpl.label}
+                    onClick={() => { setInput(tpl.content); setError(null); }}
                     className="text-left bg-surface-900/50 border border-surface-800 rounded-lg p-3 hover:border-primary-500/30 transition-colors"
                   >
-                    <span className="text-xs font-medium text-surface-200 block">{t.label}</span>
-                    <span className="text-[10px] text-surface-500">{t.desc}</span>
+                    <span className="text-xs font-medium text-surface-200 block">{tpl.label}</span>
+                    <span className="text-[10px] text-surface-500">{tpl.desc}</span>
                   </button>
                 ))}
               </div>
@@ -491,19 +497,19 @@ export default function ScannerClient() {
             <div className="mb-6">
               <div className="flex items-center justify-between mb-2">
                 <label className="text-sm font-medium text-surface-300">
-                  Dependency File Content
+                  {t.scan_dep_label}
                 </label>
                 <button
                   onClick={loadSample}
                   className="text-xs text-primary-400 hover:text-primary-300 transition-colors"
                 >
-                  Load sample package.json
+                  {t.scan_load_sample}
                 </button>
               </div>
               <textarea
                 value={input}
                 onChange={(e) => { setInput(e.target.value); setError(null); }}
-                placeholder={`Paste your package.json, requirements.txt, Gemfile, go.mod, or Cargo.toml here...`}
+                placeholder={t.scan_paste_placeholder}
                 rows={10}
                 className="w-full bg-surface-900 border border-surface-700 rounded-xl px-4 py-3 text-sm text-surface-200 placeholder:text-surface-600 font-mono focus:outline-none focus:border-primary-500 resize-y"
                 spellCheck={false}
@@ -538,7 +544,7 @@ export default function ScannerClient() {
                   <div className="space-y-2">
                     <FolderOpen className="w-10 h-10 text-emerald-400 mx-auto" />
                     <p className="text-surface-200 font-medium">{uploadedFileName}</p>
-                    <p className="text-xs text-surface-500">File loaded. Click &quot;Scan Dependencies&quot; below.</p>
+                    <p className="text-xs text-surface-500">{t.scan_file_loaded}</p>
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
@@ -547,17 +553,17 @@ export default function ScannerClient() {
                       }}
                       className="text-xs text-red-400 hover:text-red-300 mt-2"
                     >
-                      Remove file
+                      {t.scan_remove_file}
                     </button>
                   </div>
                 ) : (
                   <div className="space-y-2">
                     <Upload className="w-10 h-10 text-surface-500 mx-auto" />
                     <p className="text-surface-300 font-medium">
-                      Drop a dependency file here or click to browse
+                      {t.scan_drop_file}
                     </p>
                     <p className="text-xs text-surface-500">
-                      Supports: package.json, requirements.txt, Gemfile, go.mod, Cargo.toml
+                      {t.scan_supported_files}
                     </p>
                   </div>
                 )}
@@ -569,7 +575,7 @@ export default function ScannerClient() {
           {inputMode === 'github-url' && (
             <div className="mb-6">
               <label className="text-sm font-medium text-surface-300 mb-2 block">
-                Public GitHub Repository URL
+                {t.scan_public_repo}
               </label>
               <div className="relative">
                 <Link2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-500" />
@@ -582,7 +588,7 @@ export default function ScannerClient() {
                 />
               </div>
               <p className="text-xs text-surface-500 mt-2">
-                We&apos;ll automatically find and scan dependency files (package.json, requirements.txt, etc.) from the repo.
+                {t.scan_auto_find}
               </p>
             </div>
           )}
@@ -593,20 +599,20 @@ export default function ScannerClient() {
               {loadingRepos ? (
                 <div className="text-center py-10 bg-surface-900/50 border border-surface-800 rounded-xl">
                   <Loader2 className="w-8 h-8 text-primary-500 mx-auto mb-3 animate-spin" />
-                  <p className="text-sm text-surface-400">Loading your repositories...</p>
+                  <p className="text-sm text-surface-400">{t.scan_loading_repos}</p>
                 </div>
               ) : repos.length === 0 ? (
                 <div className="text-center py-10 bg-surface-900/50 border border-surface-800 rounded-xl">
                   <Github className="w-10 h-10 text-surface-500 mx-auto mb-3" />
-                  <p className="text-surface-300 font-medium mb-2">Connect your GitHub account</p>
+                  <p className="text-surface-300 font-medium mb-2">{t.scan_connect_github}</p>
                   <p className="text-xs text-surface-500 mb-4">
-                    Add your GitHub token in Settings to see your repos here.
+                    {t.scan_add_token}
                   </p>
                   <button
                     onClick={() => setShowSettings(true)}
                     className="text-xs text-primary-400 hover:text-primary-300 bg-primary-600/10 border border-primary-500/20 px-4 py-2 rounded-lg transition-colors"
                   >
-                    Open Settings
+                    {t.scan_open_settings}
                   </button>
                 </div>
               ) : (
@@ -617,7 +623,7 @@ export default function ScannerClient() {
                       type="text"
                       value={repoSearch}
                       onChange={(e) => setRepoSearch(e.target.value)}
-                      placeholder="Search your repos..."
+                      placeholder={t.scan_search_repos}
                       className="w-full bg-surface-800 border border-surface-700 rounded-lg pl-10 pr-4 py-2.5 text-sm text-surface-200 placeholder:text-surface-600 focus:outline-none focus:border-primary-500"
                     />
                   </div>
@@ -640,22 +646,22 @@ export default function ScannerClient() {
                         </div>
                         {repo.private && (
                           <span className="text-[10px] bg-surface-700 text-surface-400 px-1.5 py-0.5 rounded shrink-0 ml-2">
-                            Private
+                            {t.scan_private}
                           </span>
                         )}
                       </button>
                     ))}
                     {filteredRepos.length === 0 && (
-                      <p className="text-sm text-surface-500 text-center py-4">No repos match &quot;{repoSearch}&quot;</p>
+                      <p className="text-sm text-surface-500 text-center py-4">{t.scan_no_repos_match} &quot;{repoSearch}&quot;</p>
                     )}
                   </div>
                   <div className="flex items-center justify-between mt-3 pt-3 border-t border-surface-700">
-                    <span className="text-xs text-surface-500">{repos.length} repos loaded</span>
+                    <span className="text-xs text-surface-500">{repos.length} {t.scan_repos_loaded}</span>
                     <button
                       onClick={loadRepos}
                       className="text-xs text-primary-400 hover:text-primary-300 transition-colors"
                     >
-                      Refresh
+                      {t.scan_refresh}
                     </button>
                   </div>
                 </div>
@@ -675,7 +681,7 @@ export default function ScannerClient() {
                     className="inline-flex items-center gap-1.5 text-xs text-primary-400 hover:text-primary-300 mt-2 bg-primary-600/10 border border-primary-500/20 px-3 py-1.5 rounded-md transition-colors"
                   >
                     <Crown className="w-3 h-3" />
-                    Upgrade to Pro: Unlimited scans for ${config.pricing.proPrice}/mo
+                    {t.common_upgrade_pro}: {t.scan_error_limit}
                   </a>
                 )}
               </div>
@@ -692,13 +698,13 @@ export default function ScannerClient() {
               <>
                 <Loader2 className="w-5 h-5 animate-spin" />
                 {progress.total > 0
-                  ? `Scanning... (${progress.completed}/${progress.total})`
-                  : 'Fetching dependencies...'}
+                  ? `${progress.completed}/${progress.total} - ${t.scan_scanning}`
+                  : t.scan_fetching}
               </>
             ) : (
               <>
                 <Search className="w-5 h-5" />
-                Scan Dependencies
+                {t.scan_button}
               </>
             )}
           </button>
@@ -717,15 +723,14 @@ export default function ScannerClient() {
                         <Crown className="w-4 h-4 text-amber-400" />
                         <p className="text-sm font-semibold text-surface-200">
                           {result.summary.totalVulnerabilities > 0
-                            ? `${result.summary.totalVulnerabilities} vulnerabilit${result.summary.totalVulnerabilities === 1 ? 'y' : 'ies'} found. Export a full report`
+                            ? `${result.summary.totalVulnerabilities} ${t.scan_upgrade_vulns}`
                             : result.summary.critical + result.summary.high > 0
-                            ? `${result.summary.critical + result.summary.high} high-risk packages detected`
-                            : 'Unlock PDF reports, SBOM, and CI integration'}
+                            ? `${result.summary.critical + result.summary.high} ${t.scan_upgrade_high_risk}`
+                            : t.scan_upgrade_unlock}
                         </p>
                       </div>
                       <p className="text-xs text-surface-400">
-                        Pro gives you PDF/CSV/JSON exports, CycloneDX SBOM, GitHub Actions CI workflow, and unlimited scans for just ${config.pricing.proPrice}/mo
-                        <span className="text-surface-600"> (vs $399/mo for Snyk)</span>
+                        {t.scan_upgrade_desc} ${config.pricing.proPrice}{t.pricing_per_month}
                       </p>
                     </div>
                     <a
@@ -733,7 +738,7 @@ export default function ScannerClient() {
                       className="shrink-0 flex items-center gap-1.5 bg-primary-600 hover:bg-primary-500 text-white px-5 py-2.5 rounded-lg text-sm font-medium transition-colors"
                     >
                       <Crown className="w-3.5 h-3.5" />
-                      Upgrade to Pro
+                      {t.common_upgrade_pro}
                     </a>
                   </div>
                 </div>
@@ -750,14 +755,14 @@ export default function ScannerClient() {
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search packages by name..."
+                    placeholder={t.scan_search}
                     className="w-full bg-surface-900 border border-surface-700 rounded-xl pl-10 pr-4 py-2.5 text-sm text-surface-200 placeholder:text-surface-600 focus:outline-none focus:border-primary-500"
                   />
                 </div>
 
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-sm text-surface-400">Filter:</span>
+                    <span className="text-sm text-surface-400">{t.scan_filter}</span>
                     {['all', 'critical', 'high', 'medium', 'low', 'healthy'].map((level) => (
                       <button
                         key={level}
@@ -768,7 +773,7 @@ export default function ScannerClient() {
                             : 'bg-surface-800 text-surface-400 hover:text-surface-200 border border-transparent'
                         }`}
                       >
-                        {level === 'all' ? `All (${result.packages.length})` : `${level.charAt(0).toUpperCase() + level.slice(1)} (${result.packages.filter(p => p.risk.level === level).length})`}
+                        {level === 'all' ? `${t.scan_all} (${result.packages.length})` : `${level.charAt(0).toUpperCase() + level.slice(1)} (${result.packages.filter(p => p.risk.level === level).length})`}
                       </button>
                     ))}
                   </div>
@@ -779,10 +784,10 @@ export default function ScannerClient() {
                       onChange={(e) => setSortKey(e.target.value as SortKey)}
                       className="bg-surface-800 border border-surface-700 rounded-lg px-3 py-1.5 text-xs text-surface-300 focus:outline-none focus:border-primary-500"
                     >
-                      <option value="risk">Sort by Risk (High first)</option>
-                      <option value="vulns">Sort by Vulnerabilities</option>
-                      <option value="name">Sort by Name</option>
-                      <option value="release">Sort by Staleness</option>
+                      <option value="risk">{t.scan_sort_risk}</option>
+                      <option value="vulns">{t.scan_sort_vulns}</option>
+                      <option value="name">{t.scan_sort_name}</option>
+                      <option value="release">{t.scan_sort_staleness}</option>
                     </select>
                   </div>
                 </div>
@@ -792,7 +797,7 @@ export default function ScannerClient() {
                 {sortedPackages.length === 0 ? (
                   <div className="text-center py-12 text-surface-500">
                     <Package className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                    <p className="text-sm">No packages match this filter.</p>
+                    <p className="text-sm">{t.scan_no_match}</p>
                   </div>
                 ) : (
                   sortedPackages.map((analysis: PackageAnalysis) => (
@@ -803,7 +808,7 @@ export default function ScannerClient() {
 
               <div className="text-center py-8 border-t border-surface-800">
                 <p className="text-sm text-surface-500 mb-3">
-                  Found this useful? Consider supporting the project.
+                  {t.scan_support_text}
                 </p>
                 <a
                   href={config.buyMeACoffeeUrl}
@@ -812,7 +817,7 @@ export default function ScannerClient() {
                   className="inline-flex items-center gap-2 bg-amber-500/10 border border-amber-500/20 text-amber-400 hover:text-amber-300 px-5 py-2.5 rounded-lg text-sm font-medium transition-colors"
                 >
                   <Coffee className="w-4 h-4" />
-                  Buy Me a Coffee
+                  {t.scan_buy_coffee}
                 </a>
               </div>
             </div>

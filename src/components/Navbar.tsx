@@ -61,7 +61,7 @@ export default function Navbar() {
               {t.nav_pricing}
             </Link>
             <Link href="/#how-it-works" className="text-sm text-surface-400 hover:text-surface-100 transition-colors">
-              How It Works
+              {t.nav_how_it_works}
             </Link>
             <Link href="/#faq" className="text-sm text-surface-400 hover:text-surface-100 transition-colors">
               {t.nav_faq}
@@ -88,7 +88,7 @@ export default function Navbar() {
                 <button
                   onClick={handleLogout}
                   className="text-surface-400 hover:text-surface-100 transition-colors p-2"
-                  title="Log Out"
+                  title={t.nav_logout}
                 >
                   <LogOut className="w-4 h-4" />
                 </button>
@@ -126,7 +126,7 @@ export default function Navbar() {
               {t.nav_pricing}
             </Link>
             <Link href="/#how-it-works" className="text-sm text-surface-400 hover:text-surface-100 transition-colors" onClick={() => setMobileOpen(false)}>
-              How It Works
+              {t.nav_how_it_works}
             </Link>
             <div className="py-1">
               <LanguageSwitcher />
@@ -137,7 +137,7 @@ export default function Navbar() {
                   {t.nav_scanner}
                 </Link>
                 <button onClick={() => { handleLogout(); setMobileOpen(false); }} className="text-sm text-surface-400 hover:text-surface-100 transition-colors text-left">
-                  Log Out
+                  {t.nav_logout}
                 </button>
               </>
             ) : (

@@ -4,6 +4,7 @@ import { Shield, Github, Heart, Coffee } from 'lucide-react';
 import Link from 'next/link';
 import { config } from '@/lib/config';
 import { useT } from './I18nProvider';
+import LanguageSwitcher from './LanguageSwitcher';
 
 export default function Footer() {
   const t = useT();
@@ -43,6 +44,7 @@ export default function Footer() {
               >
                 <Coffee className="w-5 h-5" />
               </a>
+              <LanguageSwitcher />
             </div>
           </div>
 
@@ -69,7 +71,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link href="/#how-it-works" className="text-sm text-surface-400 hover:text-surface-100 transition-colors">
-                  How It Works
+                  {t.nav_how_it_works}
                 </Link>
               </li>
               <li>
@@ -134,7 +136,7 @@ export default function Footer() {
             </a>
           </p>
           <p className="text-sm text-surface-500 flex items-center gap-1">
-            {t.footer_made_with} <Heart className="w-3.5 h-3.5 text-red-500 fill-red-500" /> for the open-source community
+            {t.footer_made_with} <Heart className="w-3.5 h-3.5 text-red-500 fill-red-500" /> {t.footer_community}
           </p>
         </div>
       </div>

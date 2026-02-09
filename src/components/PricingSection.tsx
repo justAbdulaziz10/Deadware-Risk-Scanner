@@ -57,20 +57,20 @@ export default function PricingSection() {
               </div>
               <div className="flex items-baseline gap-1">
                 <span className="text-4xl font-bold">{t.pricing_free_price}</span>
-                <span className="text-surface-400">/forever</span>
+                <span className="text-surface-400">{t.pricing_forever}</span>
               </div>
               <p className="text-xs text-surface-500 mt-2">{t.pricing_no_cc}</p>
             </div>
             <ul className="space-y-3 mb-8 flex-1">
               {[
-                '5 scans per month',
-                'CVE vulnerability detection',
-                'Abandonment risk scoring',
-                'Replacement suggestions',
-                'npm, PyPI, Go, Cargo, Ruby',
-                'Share results link',
-              ].map((f) => (
-                <li key={f} className="flex items-start gap-2 text-sm text-surface-300">
+                t.pricing_free_f1,
+                t.pricing_free_f2,
+                t.pricing_free_f3,
+                t.pricing_free_f4,
+                t.pricing_free_f5,
+                t.pricing_free_f6,
+              ].map((f, i) => (
+                <li key={i} className="flex items-start gap-2 text-sm text-surface-300">
                   <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
                   {f}
                 </li>
@@ -100,21 +100,21 @@ export default function PricingSection() {
                 <span className="text-surface-400">{t.pricing_per_month}</span>
               </div>
               <p className="text-xs text-emerald-400 mt-2">
-                Save ${399 - proPrice}/mo vs Snyk
+                {t.pricing_save_vs} ${399 - proPrice}/mo vs Snyk
               </p>
             </div>
             <ul className="space-y-3 mb-8 flex-1">
               {[
-                'Unlimited scans',
-                'All 5+ ecosystems',
-                'PDF, CSV & JSON export',
-                'SBOM export (CycloneDX)',
-                'CI badge & GitHub Actions YAML',
-                'Scan history (50 reports)',
-                'GitHub enrichment (BYOK)',
-                'Priority support',
-              ].map((f) => (
-                <li key={f} className="flex items-start gap-2 text-sm text-surface-300">
+                t.pricing_pro_f1,
+                t.pricing_pro_f2,
+                t.pricing_pro_f3,
+                t.pricing_pro_f4,
+                t.pricing_pro_f5,
+                t.pricing_pro_f6,
+                t.pricing_pro_f7,
+                t.pricing_pro_f8,
+              ].map((f, i) => (
+                <li key={i} className="flex items-start gap-2 text-sm text-surface-300">
                   <CheckCircle2 className="w-4 h-4 text-primary-400 mt-0.5 shrink-0" />
                   {f}
                 </li>
@@ -124,7 +124,7 @@ export default function PricingSection() {
               href={paymentsReady ? getCheckoutUrl('pro') : '#pricing'}
               onClick={!paymentsReady ? (e: React.MouseEvent) => {
                 e.preventDefault();
-                alert('Payments are being set up. Check back soon!');
+                alert(t.pricing_payments_msg);
               } : undefined}
               className="w-full py-3.5 rounded-lg bg-primary-600 hover:bg-primary-500 text-white text-center font-semibold transition-colors text-sm block"
             >
@@ -145,20 +145,20 @@ export default function PricingSection() {
                 <span className="text-surface-400">{t.pricing_per_month}</span>
               </div>
               <p className="text-xs text-emerald-400 mt-2">
-                ${Math.round(teamPrice / 10)}/seat, cheaper than a coffee
+                ${Math.round(teamPrice / 10)}{t.pricing_per_seat}
               </p>
             </div>
             <ul className="space-y-3 mb-8 flex-1">
               {[
-                'Everything in Pro',
-                'Up to 10 team members',
-                'Shared scan dashboard',
-                'Slack/webhook notifications',
-                'Custom risk thresholds',
-                'Priority support',
-                'Annual billing discount',
-              ].map((f) => (
-                <li key={f} className="flex items-start gap-2 text-sm text-surface-300">
+                t.pricing_team_f1,
+                t.pricing_team_f2,
+                t.pricing_team_f3,
+                t.pricing_team_f4,
+                t.pricing_team_f5,
+                t.pricing_team_f6,
+                t.pricing_team_f7,
+              ].map((f, i) => (
+                <li key={i} className="flex items-start gap-2 text-sm text-surface-300">
                   <CheckCircle2 className="w-4 h-4 text-purple-400 mt-0.5 shrink-0" />
                   {f}
                 </li>
@@ -168,7 +168,7 @@ export default function PricingSection() {
               href={paymentsReady ? getCheckoutUrl('team') : '#pricing'}
               onClick={!paymentsReady ? (e: React.MouseEvent) => {
                 e.preventDefault();
-                alert('Payments are being set up. Check back soon!');
+                alert(t.pricing_payments_msg);
               } : undefined}
               className="w-full py-3 rounded-lg border border-surface-600 text-surface-200 text-center font-medium hover:bg-surface-800 transition-colors text-sm block"
             >
