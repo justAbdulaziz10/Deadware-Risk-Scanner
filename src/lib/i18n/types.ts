@@ -291,6 +291,87 @@ export interface Translations {
   pkg_repository: string;
   pkg_homepage: string;
 
+  // Animated stats
+  stats_ecosystems: string;
+  stats_risk_factors: string;
+  stats_replacements: string;
+  stats_client_side: string;
+
+  // Health gauge
+  gauge_health: string;
+
+  // Scan summary card
+  summary_total: string;
+  summary_critical: string;
+  summary_high: string;
+  summary_medium: string;
+  summary_healthy: string;
+  summary_known_vulnerability: string;
+  summary_known_vulnerabilities: string;
+  summary_deprecated_package: string;
+  summary_deprecated_packages: string;
+
+  // Settings panel
+  settings_title: string;
+  settings_close: string;
+  settings_desc: string;
+  settings_github_label: string;
+  settings_github_help: string;
+  settings_github_needs: string;
+  settings_save: string;
+  settings_saved: string;
+  settings_auth_error: string;
+
+  // Login
+  login_welcome: string;
+  login_subtitle: string;
+  login_email: string;
+  login_email_placeholder: string;
+  login_password: string;
+  login_password_placeholder: string;
+  login_button: string;
+  login_loading: string;
+  login_or: string;
+  login_github: string;
+  login_github_loading: string;
+  login_no_account: string;
+
+  // Signup
+  signup_title: string;
+  signup_subtitle: string;
+  signup_email: string;
+  signup_email_placeholder: string;
+  signup_password: string;
+  signup_password_placeholder: string;
+  signup_button: string;
+  signup_loading: string;
+  signup_or: string;
+  signup_github: string;
+  signup_github_loading: string;
+  signup_has_account: string;
+  signup_check_email: string;
+  signup_confirm_sent: string;
+  signup_activate: string;
+  signup_back_login: string;
+
+  // Success page
+  success_title: string;
+  success_plan_active: string;
+  success_unlocked: string;
+  success_f1: string;
+  success_f2: string;
+  success_f3: string;
+  success_f4: string;
+  success_f5: string;
+  success_f6: string;
+  success_f7: string;
+  success_f8: string;
+  success_f9: string;
+  success_start: string;
+  success_synced: string;
+  success_confirming: string;
+  success_wait: string;
+
   // Footer
   footer_desc: string;
   footer_product: string;

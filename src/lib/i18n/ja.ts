@@ -265,6 +265,87 @@ const ja: Translations = {
   pkg_repository: 'リポジトリ',
   pkg_homepage: 'ホームページ',
 
+  // Animated stats
+  stats_ecosystems: '対応エコシステム',
+  stats_risk_factors: '分析されるリスク要因',
+  stats_replacements: 'パッケージ代替提案',
+  stats_client_side: 'クライアントサイド処理',
+
+  // Health gauge
+  gauge_health: 'ヘルス',
+
+  // Scan summary card
+  summary_total: '合計',
+  summary_critical: '重大',
+  summary_high: '高',
+  summary_medium: '中',
+  summary_healthy: '健全',
+  summary_known_vulnerability: '件の既知の脆弱性',
+  summary_known_vulnerabilities: '件の既知の脆弱性',
+  summary_deprecated_package: '件の非推奨パッケージ',
+  summary_deprecated_packages: '件の非推奨パッケージ',
+
+  // Settings panel
+  settings_title: 'API設定（BYOK）',
+  settings_close: '閉じる',
+  settings_desc: 'APIトークンを任意で設定すると、より詳細な分析データを取得できます。トークンはブラウザのローカルストレージにのみ保存され、サーバーに送信されることはありません。',
+  settings_github_label: 'GitHub Personal Access Token',
+  settings_github_help: 'リポジトリのステータス確認、未解決Issue数、セキュリティポリシーの検出が可能になります。',
+  settings_github_needs: '必要なスコープ',
+  settings_save: '設定を保存',
+  settings_saved: '設定を保存しました！',
+  settings_auth_error: '認証がまだ設定されていません。',
+
+  // Login
+  login_welcome: 'おかえりなさい',
+  login_subtitle: 'スキャナーダッシュボードにアクセスするにはログインしてください',
+  login_email: 'メールアドレス',
+  login_email_placeholder: 'you@example.com',
+  login_password: 'パスワード',
+  login_password_placeholder: 'パスワードを入力',
+  login_button: 'ログイン',
+  login_loading: 'ログイン中...',
+  login_or: 'または',
+  login_github: 'GitHubでログイン',
+  login_github_loading: 'リダイレクト中...',
+  login_no_account: 'アカウントをお持ちでないですか？',
+
+  // Signup
+  signup_title: 'アカウント作成',
+  signup_subtitle: '無料で依存関係のスキャンを始めましょう',
+  signup_email: 'メールアドレス',
+  signup_email_placeholder: 'you@example.com',
+  signup_password: 'パスワード',
+  signup_password_placeholder: '6文字以上',
+  signup_button: 'アカウントを作成',
+  signup_loading: 'アカウント作成中...',
+  signup_or: 'または',
+  signup_github: 'GitHubで登録',
+  signup_github_loading: 'リダイレクト中...',
+  signup_has_account: 'すでにアカウントをお持ちですか？',
+  signup_check_email: 'メールをご確認ください',
+  signup_confirm_sent: '確認リンクを送信しました：',
+  signup_activate: 'リンクをクリックしてアカウントを有効化してください。',
+  signup_back_login: 'ログインに戻る',
+
+  // Success page
+  success_title: 'お支払い完了！',
+  success_plan_active: 'プランが有効になりました。すべてのプレミアム機能がアンロックされました。',
+  success_unlocked: 'アンロックされた機能',
+  success_f1: '無制限の依存関係スキャン',
+  success_f2: 'PDF・JSONレポートエクスポート',
+  success_f3: 'README用CIヘルスバッジ',
+  success_f4: '5つ以上のエコシステム対応（npm、PyPI、RubyGems、Go、Cargo）',
+  success_f5: 'スキャン履歴（50レポート）',
+  success_f6: 'BYOKトークンによるGitHub連携',
+  success_f7: '最大10名のチームメンバー',
+  success_f8: 'Slack/Webhook通知',
+  success_f9: 'カスタムリスク閾値',
+  success_start: 'スキャンを開始',
+  success_synced: 'プランはアカウントに紐付けられ、安全に同期されています。',
+  success_confirming: 'お支払いを確認中...',
+  success_wait: '数秒かかる場合があります。',
+
   // Footer
   footer_desc: '放置されたnpm、PyPI、RubyGemsパッケージを検出する無料オープンソース依存関係スキャナー。CVE脆弱性スキャン、バスファクター分析、非推奨警告、代替提案。すべてブラウザ上で100%動作します。',
   footer_product: '製品',

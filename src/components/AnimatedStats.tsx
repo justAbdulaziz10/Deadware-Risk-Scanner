@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, useRef } from 'react';
+import { useT } from './I18nProvider';
 
 function useCountUp(target: number, duration: number = 2000, suffix: string = '') {
   const [count, setCount] = useState(0);
@@ -34,6 +35,7 @@ function useCountUp(target: number, duration: number = 2000, suffix: string = ''
 }
 
 export default function AnimatedStats() {
+  const t = useT();
   const ecosystems = useCountUp(5, 1500, '+');
   const riskFactors = useCountUp(7, 1500);
   const replacements = useCountUp(50, 2000, '+');
@@ -44,19 +46,19 @@ export default function AnimatedStats() {
       <div className="max-w-5xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
         <div ref={ecosystems.ref}>
           <div className="text-3xl font-bold text-surface-100">{ecosystems.count}</div>
-          <div className="text-sm text-surface-400 mt-1">Ecosystems Supported</div>
+          <div className="text-sm text-surface-400 mt-1">{t.stats_ecosystems}</div>
         </div>
         <div ref={riskFactors.ref}>
           <div className="text-3xl font-bold text-surface-100">{riskFactors.count}</div>
-          <div className="text-sm text-surface-400 mt-1">Risk Factors Analyzed</div>
+          <div className="text-sm text-surface-400 mt-1">{t.stats_risk_factors}</div>
         </div>
         <div ref={replacements.ref}>
           <div className="text-3xl font-bold text-surface-100">{replacements.count}</div>
-          <div className="text-sm text-surface-400 mt-1">Package Replacements</div>
+          <div className="text-sm text-surface-400 mt-1">{t.stats_replacements}</div>
         </div>
         <div ref={clientSide.ref}>
           <div className="text-3xl font-bold text-surface-100">{clientSide.count}</div>
-          <div className="text-sm text-surface-400 mt-1">Client-Side Processing</div>
+          <div className="text-sm text-surface-400 mt-1">{t.stats_client_side}</div>
         </div>
       </div>
     </section>

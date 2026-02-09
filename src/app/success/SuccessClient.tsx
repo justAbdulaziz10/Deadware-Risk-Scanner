@@ -6,8 +6,10 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { fetchUserPlan } from '@/lib/storage';
 import { CheckCircle2, ArrowRight, Shield, Sparkles, Loader2 } from 'lucide-react';
+import { useT } from '@/components/I18nProvider';
 
 export default function SuccessClient() {
+  const t = useT();
   const [planName, setPlanName] = useState<string | null>(null);
 
   useEffect(() => {
@@ -47,30 +49,30 @@ export default function SuccessClient() {
               </div>
 
               <h1 className="text-3xl sm:text-4xl font-bold mb-3">
-                Payment Successful!
+                {t.success_title}
               </h1>
 
               <p className="text-surface-400 text-lg mb-8">
-                Your <span className="text-primary-400 font-semibold">{planName}</span> plan is now active. All premium features are unlocked.
+                <span className="text-primary-400 font-semibold">{planName}</span> {t.success_plan_active}
               </p>
 
               <div className="bg-surface-900/50 border border-surface-800 rounded-xl p-6 mb-8 text-left">
                 <h3 className="text-sm font-semibold text-surface-300 uppercase tracking-wider mb-4 flex items-center gap-2">
                   <Sparkles className="w-4 h-4 text-amber-400" />
-                  Unlocked Features
+                  {t.success_unlocked}
                 </h3>
                 <ul className="space-y-3">
                   {[
-                    'Unlimited dependency scans',
-                    'PDF & JSON report export',
-                    'CI health badge for your README',
-                    'All 5+ ecosystems (npm, PyPI, RubyGems, Go, Cargo)',
-                    'Full scan history (50 reports)',
-                    'GitHub enrichment with BYOK token',
+                    t.success_f1,
+                    t.success_f2,
+                    t.success_f3,
+                    t.success_f4,
+                    t.success_f5,
+                    t.success_f6,
                     ...(planName === 'Team' ? [
-                      'Up to 10 team members',
-                      'Slack/webhook notifications',
-                      'Custom risk thresholds',
+                      t.success_f7,
+                      t.success_f8,
+                      t.success_f9,
                     ] : []),
                   ].map((feature) => (
                     <li key={feature} className="flex items-start gap-2 text-sm text-surface-300">
@@ -85,19 +87,19 @@ export default function SuccessClient() {
                 href="/scanner"
                 className="inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-500 text-white px-8 py-3.5 rounded-xl font-semibold transition-all hover:shadow-lg hover:shadow-primary-600/25"
               >
-                Start Scanning
+                {t.success_start}
                 <ArrowRight className="w-4 h-4" />
               </Link>
 
               <p className="text-xs text-surface-500 mt-6">
-                Your plan is linked to your account and synced securely.
+                {t.success_synced}
               </p>
             </div>
           ) : (
             <div className="animate-fade-in">
               <Loader2 className="w-12 h-12 text-primary-500 mx-auto mb-4 animate-spin" />
-              <p className="text-surface-400">Confirming your payment...</p>
-              <p className="text-xs text-surface-500 mt-2">This may take a few seconds.</p>
+              <p className="text-surface-400">{t.success_confirming}</p>
+              <p className="text-xs text-surface-500 mt-2">{t.success_wait}</p>
             </div>
           )}
         </div>

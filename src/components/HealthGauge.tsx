@@ -1,6 +1,7 @@
 'use client';
 
 import clsx from 'clsx';
+import { useT } from './I18nProvider';
 
 function getColor(score: number): string {
   if (score >= 80) return 'text-emerald-400';
@@ -19,6 +20,7 @@ function getStrokeColor(score: number): string {
 }
 
 export default function HealthGauge({ score, size = 160 }: { score: number; size?: number }) {
+  const t = useT();
   const radius = (size - 20) / 2;
   const circumference = 2 * Math.PI * radius;
   const offset = circumference - (score / 100) * circumference;
@@ -53,7 +55,7 @@ export default function HealthGauge({ score, size = 160 }: { score: number; size
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
           <span className={clsx('text-3xl font-bold', getColor(score))}>{score}</span>
-          <span className="text-xs text-surface-500 uppercase tracking-wider">Health</span>
+          <span className="text-xs text-surface-500 uppercase tracking-wider">{t.gauge_health}</span>
         </div>
       </div>
     </div>

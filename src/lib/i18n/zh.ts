@@ -265,6 +265,87 @@ const zh: Translations = {
   pkg_repository: '仓库',
   pkg_homepage: '主页',
 
+  // Animated stats
+  stats_ecosystems: '支持的生态系统',
+  stats_risk_factors: '分析的风险因素',
+  stats_replacements: '包替代方案',
+  stats_client_side: '客户端处理',
+
+  // Health gauge
+  gauge_health: '健康度',
+
+  // Scan summary card
+  summary_total: '总计',
+  summary_critical: '严重',
+  summary_high: '高风险',
+  summary_medium: '中风险',
+  summary_healthy: '健康',
+  summary_known_vulnerability: '个已知漏洞',
+  summary_known_vulnerabilities: '个已知漏洞',
+  summary_deprecated_package: '个已弃用的包',
+  summary_deprecated_packages: '个已弃用的包',
+
+  // Settings panel
+  settings_title: 'API 设置 (BYOK)',
+  settings_close: '关闭',
+  settings_desc: '可选提供您自己的 API 令牌以获取更丰富的分析数据。令牌仅存储在您浏览器的本地存储中，绝不会发送到任何服务器。',
+  settings_github_label: 'GitHub 个人访问令牌',
+  settings_github_help: '启用仓库状态检查、未解决问题数量和安全策略检测。',
+  settings_github_needs: '需要',
+  settings_save: '保存设置',
+  settings_saved: '设置已保存！',
+  settings_auth_error: '身份验证尚未配置。',
+
+  // Login
+  login_welcome: '欢迎回来',
+  login_subtitle: '登录以访问您的扫描器仪表板',
+  login_email: '邮箱',
+  login_email_placeholder: 'you@example.com',
+  login_password: '密码',
+  login_password_placeholder: '您的密码',
+  login_button: '登录',
+  login_loading: '正在登录...',
+  login_or: '或',
+  login_github: '使用 GitHub 继续',
+  login_github_loading: '正在跳转...',
+  login_no_account: '还没有账户？',
+
+  // Signup
+  signup_title: '创建您的账户',
+  signup_subtitle: '免费开始扫描您的依赖项',
+  signup_email: '邮箱',
+  signup_email_placeholder: 'you@example.com',
+  signup_password: '密码',
+  signup_password_placeholder: '至少 6 个字符',
+  signup_button: '创建账户',
+  signup_loading: '正在创建账户...',
+  signup_or: '或',
+  signup_github: '使用 GitHub 继续',
+  signup_github_loading: '正在跳转...',
+  signup_has_account: '已有账户？',
+  signup_check_email: '请查看您的邮箱',
+  signup_confirm_sent: '我们已向以下地址发送了确认链接',
+  signup_activate: '点击链接以激活您的账户。',
+  signup_back_login: '返回登录',
+
+  // Success page
+  success_title: '支付成功！',
+  success_plan_active: '计划现已激活。所有高级功能已解锁。',
+  success_unlocked: '已解锁的功能',
+  success_f1: '无限次依赖扫描',
+  success_f2: 'PDF 和 JSON 报告导出',
+  success_f3: 'README CI 健康徽章',
+  success_f4: '所有 5+ 个生态系统（npm、PyPI、RubyGems、Go、Cargo）',
+  success_f5: '完整扫描历史（50 份报告）',
+  success_f6: '使用 BYOK 令牌的 GitHub 增强数据',
+  success_f7: '最多 10 名团队成员',
+  success_f8: 'Slack/webhook 通知',
+  success_f9: '自定义风险阈值',
+  success_start: '开始扫描',
+  success_synced: '您的计划已关联到您的账户并安全同步。',
+  success_confirming: '正在确认您的付款...',
+  success_wait: '这可能需要几秒钟。',
+
   // Footer
   footer_desc: '免费开源依赖扫描器，检测废弃的 npm、PyPI 和 RubyGems 包。CVE 漏洞扫描、总线因子分析、弃用警告和替代建议。100% 在浏览器中运行。',
   footer_product: '产品',

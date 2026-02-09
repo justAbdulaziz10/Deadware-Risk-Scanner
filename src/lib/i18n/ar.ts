@@ -265,6 +265,87 @@ const ar: Translations = {
   pkg_repository: 'المستودع',
   pkg_homepage: 'الصفحة الرئيسية',
 
+  // Animated stats
+  stats_ecosystems: 'أنظمة بيئية مدعومة',
+  stats_risk_factors: 'عوامل مخاطر محللة',
+  stats_replacements: 'بدائل للحزم',
+  stats_client_side: 'معالجة من جانب العميل',
+
+  // Health gauge
+  gauge_health: 'الصحة',
+
+  // Scan summary card
+  summary_total: 'الإجمالي',
+  summary_critical: 'حرج',
+  summary_high: 'عالي',
+  summary_medium: 'متوسط',
+  summary_healthy: 'سليم',
+  summary_known_vulnerability: 'ثغرة معروفة',
+  summary_known_vulnerabilities: 'ثغرات معروفة',
+  summary_deprecated_package: 'حزمة متوقفة',
+  summary_deprecated_packages: 'حزم متوقفة',
+
+  // Settings panel
+  settings_title: 'إعدادات API (BYOK)',
+  settings_close: 'إغلاق',
+  settings_desc: 'يمكنك اختيارياً تقديم رموز API الخاصة بك للحصول على بيانات تحليل أغنى. يتم تخزين الرموز فقط في التخزين المحلي لمتصفحك ولا تُرسل أبداً إلى أي خادم.',
+  settings_github_label: 'رمز الوصول الشخصي لـ GitHub',
+  settings_github_help: 'يتيح فحص حالة المستودع وعدد المشاكل المفتوحة واكتشاف سياسة الأمان.',
+  settings_github_needs: 'يحتاج',
+  settings_save: 'حفظ الإعدادات',
+  settings_saved: 'تم حفظ الإعدادات!',
+  settings_auth_error: 'لم يتم تكوين المصادقة بعد.',
+
+  // Login
+  login_welcome: 'مرحباً بعودتك',
+  login_subtitle: 'سجل الدخول للوصول إلى لوحة تحكم الماسح',
+  login_email: 'البريد الإلكتروني',
+  login_email_placeholder: 'you@example.com',
+  login_password: 'كلمة المرور',
+  login_password_placeholder: 'كلمة المرور الخاصة بك',
+  login_button: 'تسجيل الدخول',
+  login_loading: 'جارٍ تسجيل الدخول...',
+  login_or: 'أو',
+  login_github: 'المتابعة باستخدام GitHub',
+  login_github_loading: 'جارٍ إعادة التوجيه...',
+  login_no_account: 'ليس لديك حساب؟',
+
+  // Signup
+  signup_title: 'أنشئ حسابك',
+  signup_subtitle: 'ابدأ بمسح تبعياتك مجاناً',
+  signup_email: 'البريد الإلكتروني',
+  signup_email_placeholder: 'you@example.com',
+  signup_password: 'كلمة المرور',
+  signup_password_placeholder: '6 أحرف على الأقل',
+  signup_button: 'إنشاء حساب',
+  signup_loading: 'جارٍ إنشاء الحساب...',
+  signup_or: 'أو',
+  signup_github: 'المتابعة باستخدام GitHub',
+  signup_github_loading: 'جارٍ إعادة التوجيه...',
+  signup_has_account: 'لديك حساب بالفعل؟',
+  signup_check_email: 'تحقق من بريدك الإلكتروني',
+  signup_confirm_sent: 'أرسلنا رابط تأكيد إلى',
+  signup_activate: 'انقر على الرابط لتفعيل حسابك.',
+  signup_back_login: 'العودة لتسجيل الدخول',
+
+  // Success page
+  success_title: 'تمت عملية الدفع بنجاح!',
+  success_plan_active: 'الخطة مفعّلة الآن. تم فتح جميع الميزات المميزة.',
+  success_unlocked: 'الميزات المفتوحة',
+  success_f1: 'عمليات مسح غير محدودة للتبعيات',
+  success_f2: 'تصدير تقارير PDF و JSON',
+  success_f3: 'شارة صحة CI لملف README',
+  success_f4: 'جميع الأنظمة البيئية 5+ (npm، PyPI، RubyGems، Go، Cargo)',
+  success_f5: 'سجل مسح كامل (50 تقرير)',
+  success_f6: 'إثراء GitHub برمز BYOK',
+  success_f7: 'حتى 10 أعضاء فريق',
+  success_f8: 'إشعارات Slack/webhook',
+  success_f9: 'عتبات مخاطر مخصصة',
+  success_start: 'ابدأ المسح',
+  success_synced: 'خطتك مرتبطة بحسابك ومتزامنة بشكل آمن.',
+  success_confirming: 'جارٍ تأكيد الدفع...',
+  success_wait: 'قد يستغرق هذا بضع ثوانٍ.',
+
   // Footer
   footer_desc: 'ماسح تبعيات مجاني ومفتوح المصدر يكتشف حزم npm وPyPI وRubyGems المهجورة. مسح ثغرات CVE وتحليل عامل الحافلة وتحذيرات الإيقاف واقتراحات البدائل. كل شيء يعمل 100% في متصفحك.',
   footer_product: 'المنتج',
