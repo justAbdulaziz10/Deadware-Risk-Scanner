@@ -265,6 +265,87 @@ const hi: Translations = {
   pkg_repository: 'रिपॉजिटरी',
   pkg_homepage: 'होमपेज',
 
+  // Animated stats
+  stats_ecosystems: 'समर्थित इकोसिस्टम',
+  stats_risk_factors: 'विश्लेषित जोखिम कारक',
+  stats_replacements: 'पैकेज प्रतिस्थापन',
+  stats_client_side: 'क्लाइंट-साइड प्रोसेसिंग',
+
+  // Health gauge
+  gauge_health: 'हेल्थ',
+
+  // Scan summary card
+  summary_total: 'कुल',
+  summary_critical: 'गंभीर',
+  summary_high: 'उच्च',
+  summary_medium: 'मध्यम',
+  summary_healthy: 'स्वस्थ',
+  summary_known_vulnerability: 'ज्ञात कमजोरी',
+  summary_known_vulnerabilities: 'ज्ञात कमजोरियां',
+  summary_deprecated_package: 'डेप्रिकेटेड पैकेज',
+  summary_deprecated_packages: 'डेप्रिकेटेड पैकेज',
+
+  // Settings panel
+  settings_title: 'API सेटिंग्स (BYOK)',
+  settings_close: 'बंद करें',
+  settings_desc: 'अधिक समृद्ध विश्लेषण डेटा के लिए वैकल्पिक रूप से अपने API टोकन प्रदान करें। टोकन केवल आपके ब्राउज़र के local storage में संग्रहीत होते हैं और कभी किसी सर्वर को नहीं भेजे जाते।',
+  settings_github_label: 'GitHub Personal Access Token',
+  settings_github_help: 'रिपॉजिटरी स्थिति जांच, ओपन इश्यू काउंट और सुरक्षा नीति पहचान सक्षम करता है।',
+  settings_github_needs: 'आवश्यक',
+  settings_save: 'सेटिंग्स सहेजें',
+  settings_saved: 'सेटिंग्स सहेजी गईं!',
+  settings_auth_error: 'प्रमाणीकरण अभी तक कॉन्फ़िगर नहीं किया गया है।',
+
+  // Login
+  login_welcome: 'वापसी पर स्वागत है',
+  login_subtitle: 'अपने स्कैनर डैशबोर्ड तक पहुंचने के लिए लॉग इन करें',
+  login_email: 'ईमेल',
+  login_email_placeholder: 'you@example.com',
+  login_password: 'पासवर्ड',
+  login_password_placeholder: 'आपका पासवर्ड',
+  login_button: 'लॉग इन',
+  login_loading: 'लॉग इन हो रहा है...',
+  login_or: 'या',
+  login_github: 'GitHub से जारी रखें',
+  login_github_loading: 'रीडायरेक्ट हो रहा है...',
+  login_no_account: 'अकाउंट नहीं है?',
+
+  // Signup
+  signup_title: 'अपना अकाउंट बनाएं',
+  signup_subtitle: 'मुफ्त में अपनी डिपेंडेंसी स्कैन करना शुरू करें',
+  signup_email: 'ईमेल',
+  signup_email_placeholder: 'you@example.com',
+  signup_password: 'पासवर्ड',
+  signup_password_placeholder: 'कम से कम 6 अक्षर',
+  signup_button: 'अकाउंट बनाएं',
+  signup_loading: 'अकाउंट बनाया जा रहा है...',
+  signup_or: 'या',
+  signup_github: 'GitHub से जारी रखें',
+  signup_github_loading: 'रीडायरेक्ट हो रहा है...',
+  signup_has_account: 'पहले से अकाउंट है?',
+  signup_check_email: 'अपना ईमेल देखें',
+  signup_confirm_sent: 'हमने एक पुष्टि लिंक भेजा है',
+  signup_activate: 'अपना अकाउंट सक्रिय करने के लिए लिंक पर क्लिक करें।',
+  signup_back_login: 'लॉग इन पर वापस जाएं',
+
+  // Success page
+  success_title: 'भुगतान सफल!',
+  success_plan_active: 'प्लान अब सक्रिय है। सभी प्रीमियम सुविधाएं अनलॉक हो गई हैं।',
+  success_unlocked: 'अनलॉक की गई सुविधाएं',
+  success_f1: 'असीमित डिपेंडेंसी स्कैन',
+  success_f2: 'PDF और JSON रिपोर्ट एक्सपोर्ट',
+  success_f3: 'आपके README के लिए CI हेल्थ बैज',
+  success_f4: 'सभी 5+ इकोसिस्टम (npm, PyPI, RubyGems, Go, Cargo)',
+  success_f5: 'पूर्ण स्कैन इतिहास (50 रिपोर्ट)',
+  success_f6: 'BYOK टोकन के साथ GitHub एनरिचमेंट',
+  success_f7: '10 टीम सदस्यों तक',
+  success_f8: 'Slack/webhook सूचनाएं',
+  success_f9: 'कस्टम जोखिम सीमाएं',
+  success_start: 'स्कैनिंग शुरू करें',
+  success_synced: 'आपका प्लान आपके अकाउंट से जुड़ा हुआ है और सुरक्षित रूप से सिंक किया गया है।',
+  success_confirming: 'आपके भुगतान की पुष्टि हो रही है...',
+  success_wait: 'इसमें कुछ सेकंड लग सकते हैं।',
+
   // Footer
   footer_desc: 'परित्यक्त npm, PyPI और RubyGems पैकेज का पता लगाने वाला मुफ्त ओपन-सोर्स डिपेंडेंसी स्कैनर। CVE कमजोरी स्कैनिंग, बस फैक्टर विश्लेषण, डेप्रिकेशन चेतावनी और प्रतिस्थापन सुझाव। सब कुछ 100% आपके ब्राउज़र में चलता है।',
   footer_product: 'उत्पाद',

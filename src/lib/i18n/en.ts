@@ -265,6 +265,87 @@ const en: Translations = {
   pkg_repository: 'Repository',
   pkg_homepage: 'Homepage',
 
+  // Animated stats
+  stats_ecosystems: 'Ecosystems Supported',
+  stats_risk_factors: 'Risk Factors Analyzed',
+  stats_replacements: 'Package Replacements',
+  stats_client_side: 'Client-Side Processing',
+
+  // Health gauge
+  gauge_health: 'Health',
+
+  // Scan summary card
+  summary_total: 'Total',
+  summary_critical: 'Critical',
+  summary_high: 'High',
+  summary_medium: 'Medium',
+  summary_healthy: 'Healthy',
+  summary_known_vulnerability: 'known vulnerability',
+  summary_known_vulnerabilities: 'known vulnerabilities',
+  summary_deprecated_package: 'deprecated package',
+  summary_deprecated_packages: 'deprecated packages',
+
+  // Settings panel
+  settings_title: 'API Settings (BYOK)',
+  settings_close: 'Close',
+  settings_desc: 'Optionally provide your own API tokens for richer analysis data. Tokens are stored only in your browser\'s local storage and never sent to any server.',
+  settings_github_label: 'GitHub Personal Access Token',
+  settings_github_help: 'Enables repository status checks, open issue counts, and security policy detection.',
+  settings_github_needs: 'Needs',
+  settings_save: 'Save Settings',
+  settings_saved: 'Settings saved!',
+  settings_auth_error: 'Authentication is not configured yet.',
+
+  // Login
+  login_welcome: 'Welcome Back',
+  login_subtitle: 'Log in to access your scanner dashboard',
+  login_email: 'Email',
+  login_email_placeholder: 'you@example.com',
+  login_password: 'Password',
+  login_password_placeholder: 'Your password',
+  login_button: 'Log In',
+  login_loading: 'Logging in...',
+  login_or: 'or',
+  login_github: 'Continue with GitHub',
+  login_github_loading: 'Redirecting...',
+  login_no_account: 'Don\'t have an account?',
+
+  // Signup
+  signup_title: 'Create Your Account',
+  signup_subtitle: 'Start scanning your dependencies for free',
+  signup_email: 'Email',
+  signup_email_placeholder: 'you@example.com',
+  signup_password: 'Password',
+  signup_password_placeholder: 'At least 6 characters',
+  signup_button: 'Create Account',
+  signup_loading: 'Creating account...',
+  signup_or: 'or',
+  signup_github: 'Continue with GitHub',
+  signup_github_loading: 'Redirecting...',
+  signup_has_account: 'Already have an account?',
+  signup_check_email: 'Check Your Email',
+  signup_confirm_sent: 'We sent a confirmation link to',
+  signup_activate: 'Click the link to activate your account.',
+  signup_back_login: 'Back to Log In',
+
+  // Success page
+  success_title: 'Payment Successful!',
+  success_plan_active: 'plan is now active. All premium features are unlocked.',
+  success_unlocked: 'Unlocked Features',
+  success_f1: 'Unlimited dependency scans',
+  success_f2: 'PDF & JSON report export',
+  success_f3: 'CI health badge for your README',
+  success_f4: 'All 5+ ecosystems (npm, PyPI, RubyGems, Go, Cargo)',
+  success_f5: 'Full scan history (50 reports)',
+  success_f6: 'GitHub enrichment with BYOK token',
+  success_f7: 'Up to 10 team members',
+  success_f8: 'Slack/webhook notifications',
+  success_f9: 'Custom risk thresholds',
+  success_start: 'Start Scanning',
+  success_synced: 'Your plan is linked to your account and synced securely.',
+  success_confirming: 'Confirming your payment...',
+  success_wait: 'This may take a few seconds.',
+
   // Footer
   footer_desc: 'Free open-source dependency scanner that detects abandoned npm, PyPI, and RubyGems packages. CVE vulnerability scanning, bus factor analysis, deprecation warnings, and replacement suggestions. All running 100% in your browser.',
   footer_product: 'Product',

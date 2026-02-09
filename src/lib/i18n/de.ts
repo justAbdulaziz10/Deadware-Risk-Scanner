@@ -265,6 +265,87 @@ const de: Translations = {
   pkg_repository: 'Repository',
   pkg_homepage: 'Homepage',
 
+  // Animated stats
+  stats_ecosystems: 'Unterstützte Ökosysteme',
+  stats_risk_factors: 'Analysierte Risikofaktoren',
+  stats_replacements: 'Paket-Ersatzvorschläge',
+  stats_client_side: 'Clientseitige Verarbeitung',
+
+  // Health gauge
+  gauge_health: 'Gesundheit',
+
+  // Scan summary card
+  summary_total: 'Gesamt',
+  summary_critical: 'Kritisch',
+  summary_high: 'Hoch',
+  summary_medium: 'Mittel',
+  summary_healthy: 'Gesund',
+  summary_known_vulnerability: 'bekannte Schwachstelle',
+  summary_known_vulnerabilities: 'bekannte Schwachstellen',
+  summary_deprecated_package: 'abgekündigtes Paket',
+  summary_deprecated_packages: 'abgekündigte Pakete',
+
+  // Settings panel
+  settings_title: 'API-Einstellungen (BYOK)',
+  settings_close: 'Schließen',
+  settings_desc: 'Geben Sie optional Ihre eigenen API-Tokens für umfangreichere Analysedaten an. Tokens werden nur im lokalen Speicher Ihres Browsers gespeichert und niemals an einen Server gesendet.',
+  settings_github_label: 'GitHub Personal Access Token',
+  settings_github_help: 'Aktiviert Repository-Statusprüfungen, Anzahl offener Issues und Erkennung von Sicherheitsrichtlinien.',
+  settings_github_needs: 'Benötigt',
+  settings_save: 'Einstellungen speichern',
+  settings_saved: 'Einstellungen gespeichert!',
+  settings_auth_error: 'Die Authentifizierung ist noch nicht konfiguriert.',
+
+  // Login
+  login_welcome: 'Willkommen zurück',
+  login_subtitle: 'Melden Sie sich an, um auf Ihr Scanner-Dashboard zuzugreifen',
+  login_email: 'E-Mail',
+  login_email_placeholder: 'sie@beispiel.de',
+  login_password: 'Passwort',
+  login_password_placeholder: 'Ihr Passwort',
+  login_button: 'Anmelden',
+  login_loading: 'Anmeldung läuft...',
+  login_or: 'oder',
+  login_github: 'Weiter mit GitHub',
+  login_github_loading: 'Weiterleitung...',
+  login_no_account: 'Noch kein Konto?',
+
+  // Signup
+  signup_title: 'Konto erstellen',
+  signup_subtitle: 'Scannen Sie Ihre Abhängigkeiten kostenlos',
+  signup_email: 'E-Mail',
+  signup_email_placeholder: 'sie@beispiel.de',
+  signup_password: 'Passwort',
+  signup_password_placeholder: 'Mindestens 6 Zeichen',
+  signup_button: 'Konto erstellen',
+  signup_loading: 'Konto wird erstellt...',
+  signup_or: 'oder',
+  signup_github: 'Weiter mit GitHub',
+  signup_github_loading: 'Weiterleitung...',
+  signup_has_account: 'Bereits ein Konto?',
+  signup_check_email: 'Überprüfen Sie Ihre E-Mail',
+  signup_confirm_sent: 'Wir haben einen Bestätigungslink gesendet an',
+  signup_activate: 'Klicken Sie auf den Link, um Ihr Konto zu aktivieren.',
+  signup_back_login: 'Zurück zur Anmeldung',
+
+  // Success page
+  success_title: 'Zahlung erfolgreich!',
+  success_plan_active: 'Plan ist jetzt aktiv. Alle Premium-Funktionen sind freigeschaltet.',
+  success_unlocked: 'Freigeschaltete Funktionen',
+  success_f1: 'Unbegrenzte Abhängigkeitsscans',
+  success_f2: 'PDF- & JSON-Berichtexport',
+  success_f3: 'CI Health Badge für Ihre README',
+  success_f4: 'Alle 5+ Ökosysteme (npm, PyPI, RubyGems, Go, Cargo)',
+  success_f5: 'Vollständiger Scan-Verlauf (50 Berichte)',
+  success_f6: 'GitHub-Anreicherung mit BYOK-Token',
+  success_f7: 'Bis zu 10 Teammitglieder',
+  success_f8: 'Slack-/Webhook-Benachrichtigungen',
+  success_f9: 'Benutzerdefinierte Risikoschwellenwerte',
+  success_start: 'Scannen starten',
+  success_synced: 'Ihr Plan ist mit Ihrem Konto verknüpft und sicher synchronisiert.',
+  success_confirming: 'Ihre Zahlung wird bestätigt...',
+  success_wait: 'Dies kann einige Sekunden dauern.',
+
   // Footer
   footer_desc: 'Kostenloser Open-Source Dependency Scanner, der verlassene npm-, PyPI- und RubyGems-Pakete erkennt. CVE-Schwachstellenscanning, Bus-Faktor-Analyse, Abkündigungswarnungen und Ersatzvorschläge. Alles läuft 100% in Ihrem Browser.',
   footer_product: 'Produkt',

@@ -4,8 +4,10 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 import { Shield, Mail, Lock, Loader2, AlertTriangle, CheckCircle2, Github } from 'lucide-react';
+import { useT } from '@/components/I18nProvider';
 
 export default function SignupForm() {
+  const t = useT();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -20,7 +22,7 @@ export default function SignupForm() {
 
     const supabase = createClient();
     if (!supabase) {
-      setError('Authentication is not configured yet.');
+      setError(t.settings_auth_error);
       setLoading(false);
       return;
     }
@@ -45,7 +47,7 @@ export default function SignupForm() {
   async function handleGithubSignup() {
     const supabase = createClient();
     if (!supabase) {
-      setError('Authentication is not configured yet.');
+      setError(t.settings_auth_error);
       return;
     }
     setGhLoading(true);
@@ -69,16 +71,16 @@ export default function SignupForm() {
     return (
       <div className="w-full max-w-md text-center">
         <CheckCircle2 className="w-16 h-16 text-emerald-400 mx-auto mb-4" />
-        <h1 className="text-2xl font-bold mb-2">Check Your Email</h1>
+        <h1 className="text-2xl font-bold mb-2">{t.signup_check_email}</h1>
         <p className="text-surface-400 mb-6">
-          We sent a confirmation link to <strong className="text-surface-200">{email}</strong>.
-          Click the link to activate your account.
+          {t.signup_confirm_sent} <strong className="text-surface-200">{email}</strong>.{' '}
+          {t.signup_activate}
         </p>
         <Link
           href="/login"
           className="text-primary-400 hover:text-primary-300 text-sm transition-colors"
         >
-          Back to Log In
+          {t.signup_back_login}
         </Link>
       </div>
     );
@@ -88,9 +90,9 @@ export default function SignupForm() {
     <div className="w-full max-w-md">
       <div className="text-center mb-8">
         <Shield className="w-10 h-10 text-primary-500 mx-auto mb-3" />
-        <h1 className="text-2xl font-bold">Create Your Account</h1>
+        <h1 className="text-2xl font-bold">{t.signup_title}</h1>
         <p className="text-surface-400 text-sm mt-1">
-          Start scanning your dependencies for free
+          {t.signup_subtitle}
         </p>
       </div>
 
@@ -103,7 +105,7 @@ export default function SignupForm() {
         )}
 
         <div>
-          <label className="block text-sm font-medium text-surface-300 mb-1.5">Email</label>
+          <label className="block text-sm font-medium text-surface-300 mb-1.5">{t.signup_email}</label>
           <div className="relative">
             <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-500" />
             <input
@@ -111,14 +113,14 @@ export default function SignupForm() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              placeholder="you@example.com"
+              placeholder={t.signup_email_placeholder}
               className="w-full bg-surface-800 border border-surface-700 rounded-lg pl-10 pr-4 py-2.5 text-sm text-surface-200 placeholder:text-surface-600 focus:outline-none focus:border-primary-500"
             />
           </div>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-surface-300 mb-1.5">Password</label>
+          <label className="block text-sm font-medium text-surface-300 mb-1.5">{t.signup_password}</label>
           <div className="relative">
             <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-500" />
             <input
@@ -127,7 +129,7 @@ export default function SignupForm() {
               onChange={(e) => setPassword(e.target.value)}
               required
               minLength={6}
-              placeholder="At least 6 characters"
+              placeholder={t.signup_password_placeholder}
               className="w-full bg-surface-800 border border-surface-700 rounded-lg pl-10 pr-4 py-2.5 text-sm text-surface-200 placeholder:text-surface-600 focus:outline-none focus:border-primary-500"
             />
           </div>
@@ -139,12 +141,12 @@ export default function SignupForm() {
           className="w-full bg-primary-600 hover:bg-primary-500 disabled:bg-surface-700 disabled:cursor-not-allowed text-white py-3 rounded-xl font-semibold flex items-center justify-center gap-2 transition-colors"
         >
           {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
-          {loading ? 'Creating account...' : 'Create Account'}
+          {loading ? t.signup_loading : t.signup_button}
         </button>
 
         <div className="relative flex items-center gap-3 py-1">
           <div className="flex-1 h-px bg-surface-700" />
-          <span className="text-xs text-surface-500">or</span>
+          <span className="text-xs text-surface-500">{t.signup_or}</span>
           <div className="flex-1 h-px bg-surface-700" />
         </div>
 
@@ -155,13 +157,13 @@ export default function SignupForm() {
           className="w-full bg-surface-800 hover:bg-surface-700 disabled:bg-surface-700 disabled:cursor-not-allowed text-surface-200 border border-surface-700 py-3 rounded-xl font-semibold flex items-center justify-center gap-2 transition-colors"
         >
           {ghLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Github className="w-5 h-5" />}
-          {ghLoading ? 'Redirecting...' : 'Continue with GitHub'}
+          {ghLoading ? t.signup_github_loading : t.signup_github}
         </button>
 
         <p className="text-center text-sm text-surface-500">
-          Already have an account?{' '}
+          {t.signup_has_account}{' '}
           <Link href="/login" className="text-primary-400 hover:text-primary-300 transition-colors">
-            Log In
+            {t.nav_login}
           </Link>
         </p>
       </form>

@@ -265,6 +265,87 @@ const ru: Translations = {
   pkg_repository: 'Репозиторий',
   pkg_homepage: 'Домашняя страница',
 
+  // Animated stats
+  stats_ecosystems: 'Поддерживаемые экосистемы',
+  stats_risk_factors: 'Анализируемые факторы риска',
+  stats_replacements: 'Замены пакетов',
+  stats_client_side: 'Обработка на стороне клиента',
+
+  // Health gauge
+  gauge_health: 'Здоровье',
+
+  // Scan summary card
+  summary_total: 'Всего',
+  summary_critical: 'Критический',
+  summary_high: 'Высокий',
+  summary_medium: 'Средний',
+  summary_healthy: 'Здоровый',
+  summary_known_vulnerability: 'известная уязвимость',
+  summary_known_vulnerabilities: 'известных уязвимостей',
+  summary_deprecated_package: 'устаревший пакет',
+  summary_deprecated_packages: 'устаревших пакетов',
+
+  // Settings panel
+  settings_title: 'Настройки API (BYOK)',
+  settings_close: 'Закрыть',
+  settings_desc: 'При желании укажите собственные API-токены для более детального анализа. Токены хранятся только в локальном хранилище вашего браузера и никогда не отправляются на сервер.',
+  settings_github_label: 'GitHub Personal Access Token',
+  settings_github_help: 'Позволяет проверять статус репозитория, количество открытых задач и наличие политики безопасности.',
+  settings_github_needs: 'Требуется',
+  settings_save: 'Сохранить настройки',
+  settings_saved: 'Настройки сохранены!',
+  settings_auth_error: 'Аутентификация ещё не настроена.',
+
+  // Login
+  login_welcome: 'С возвращением',
+  login_subtitle: 'Войдите, чтобы получить доступ к панели сканера',
+  login_email: 'Email',
+  login_email_placeholder: 'you@example.com',
+  login_password: 'Пароль',
+  login_password_placeholder: 'Ваш пароль',
+  login_button: 'Войти',
+  login_loading: 'Вход...',
+  login_or: 'или',
+  login_github: 'Продолжить с GitHub',
+  login_github_loading: 'Перенаправление...',
+  login_no_account: 'Нет аккаунта?',
+
+  // Signup
+  signup_title: 'Создайте аккаунт',
+  signup_subtitle: 'Начните сканировать зависимости бесплатно',
+  signup_email: 'Email',
+  signup_email_placeholder: 'you@example.com',
+  signup_password: 'Пароль',
+  signup_password_placeholder: 'Не менее 6 символов',
+  signup_button: 'Создать аккаунт',
+  signup_loading: 'Создание аккаунта...',
+  signup_or: 'или',
+  signup_github: 'Продолжить с GitHub',
+  signup_github_loading: 'Перенаправление...',
+  signup_has_account: 'Уже есть аккаунт?',
+  signup_check_email: 'Проверьте вашу почту',
+  signup_confirm_sent: 'Мы отправили ссылку для подтверждения на',
+  signup_activate: 'Нажмите на ссылку, чтобы активировать аккаунт.',
+  signup_back_login: 'Вернуться ко входу',
+
+  // Success page
+  success_title: 'Оплата прошла успешно!',
+  success_plan_active: 'тариф активирован. Все премиум-функции разблокированы.',
+  success_unlocked: 'Разблокированные функции',
+  success_f1: 'Безлимитные сканирования зависимостей',
+  success_f2: 'Экспорт отчётов в PDF и JSON',
+  success_f3: 'Бейдж здоровья CI для вашего README',
+  success_f4: 'Все 5+ экосистем (npm, PyPI, RubyGems, Go, Cargo)',
+  success_f5: 'Полная история сканирований (50 отчётов)',
+  success_f6: 'Обогащение GitHub с BYOK-токеном',
+  success_f7: 'До 10 участников команды',
+  success_f8: 'Уведомления через Slack/вебхуки',
+  success_f9: 'Настраиваемые пороги рисков',
+  success_start: 'Начать сканирование',
+  success_synced: 'Ваш тариф привязан к аккаунту и безопасно синхронизирован.',
+  success_confirming: 'Подтверждение оплаты...',
+  success_wait: 'Это может занять несколько секунд.',
+
   // Footer
   footer_desc: 'Бесплатный сканер зависимостей с открытым кодом, обнаруживающий заброшенные пакеты npm, PyPI и RubyGems. Сканирование уязвимостей CVE, анализ bus-фактора, предупреждения об устаревании и предложения замены. Все работает на 100% в вашем браузере.',
   footer_product: 'Продукт',

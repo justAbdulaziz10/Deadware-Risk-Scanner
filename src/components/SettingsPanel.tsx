@@ -4,8 +4,10 @@ import { useState, useEffect } from 'react';
 import { UserSettings } from '@/types';
 import { getSettings, saveSettings } from '@/lib/storage';
 import { Key, Save, Eye, EyeOff } from 'lucide-react';
+import { useT } from './I18nProvider';
 
 export default function SettingsPanel({ onClose }: { onClose: () => void }) {
+  const t = useT();
   const [settings, setSettings] = useState<UserSettings>({});
   const [showGithub, setShowGithub] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -25,29 +27,28 @@ export default function SettingsPanel({ onClose }: { onClose: () => void }) {
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-lg font-semibold flex items-center gap-2">
           <Key className="w-5 h-5 text-primary-500" />
-          API Settings (BYOK)
+          {t.settings_title}
         </h3>
         <button
           onClick={onClose}
           className="text-surface-500 hover:text-surface-300 text-sm"
         >
-          Close
+          {t.settings_close}
         </button>
       </div>
 
       <p className="text-sm text-surface-400 mb-6">
-        Optionally provide your own API tokens for richer analysis data.
-        Tokens are stored only in your browser&apos;s local storage and never sent to any server.
+        {t.settings_desc}
       </p>
 
       <div className="space-y-4">
         <div>
           <label className="block text-sm font-medium text-surface-300 mb-1.5">
-            GitHub Personal Access Token
+            {t.settings_github_label}
           </label>
           <p className="text-xs text-surface-500 mb-2">
-            Enables repository status checks, open issue counts, and security policy detection.
-            Needs <code className="bg-surface-800 px-1 rounded">public_repo</code> scope.
+            {t.settings_github_help}{' '}
+            {t.settings_github_needs} <code className="bg-surface-800 px-1 rounded">public_repo</code> scope.
           </p>
           <div className="relative">
             <input
@@ -74,10 +75,10 @@ export default function SettingsPanel({ onClose }: { onClose: () => void }) {
           className="bg-primary-600 hover:bg-primary-500 text-white px-6 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors"
         >
           <Save className="w-4 h-4" />
-          Save Settings
+          {t.settings_save}
         </button>
         {saved && (
-          <span className="text-sm text-emerald-400 animate-fade-in">Settings saved!</span>
+          <span className="text-sm text-emerald-400 animate-fade-in">{t.settings_saved}</span>
         )}
       </div>
     </div>
