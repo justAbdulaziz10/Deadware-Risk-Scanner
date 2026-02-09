@@ -15,6 +15,7 @@ import {
   getScanHistory,
   deleteScanResult,
   getSettings,
+  saveSettings,
   fetchUserPlan,
   incrementScanCount,
   canScan,
@@ -89,6 +90,17 @@ export default function ScannerClient() {
   useEffect(() => {
     setHistory(getScanHistory());
     fetchUserPlan().then(setPlan);
+
+    // Auto-save GitHub token from OAuth callback
+    const params = new URLSearchParams(window.location.search);
+    const providerToken = params.get('provider_token');
+    if (providerToken) {
+      const settings = getSettings();
+      settings.githubToken = providerToken;
+      saveSettings(settings);
+      // Clean URL
+      window.history.replaceState({}, '', window.location.pathname);
+    }
   }, []);
 
   // --- File handling ---
