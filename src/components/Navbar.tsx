@@ -5,16 +5,20 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Shield, Menu, X, Github, LogOut } from 'lucide-react';
 import { config } from '@/lib/config';
-import { createClient } from '@/lib/supabase/client';
+import { createClient, isSupabaseConfigured } from '@/lib/supabase/client';
 import type { User } from '@supabase/supabase-js';
 
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const router = useRouter();
+  const authEnabled = isSupabaseConfigured();
 
   useEffect(() => {
+    if (!authEnabled) return;
     const supabase = createClient();
+    if (!supabase) return;
+
     supabase.auth.getUser().then(({ data: { user } }) => setUser(user));
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -22,10 +26,11 @@ export default function Navbar() {
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [authEnabled]);
 
   async function handleLogout() {
     const supabase = createClient();
+    if (!supabase) return;
     await supabase.auth.signOut();
     setUser(null);
     router.push('/');
