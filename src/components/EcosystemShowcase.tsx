@@ -46,7 +46,7 @@ export default function EcosystemShowcase() {
             <span className="gradient-text">5 Ecosystems</span>
           </h2>
           <p className="text-surface-400 text-lg max-w-2xl mx-auto">
-            One tool for all your dependency files. Just paste or upload — we auto-detect the ecosystem.
+            One tool for all your dependency files. Just paste or upload, and we auto-detect the ecosystem.
           </p>
         </div>
 

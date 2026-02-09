@@ -249,10 +249,10 @@ function computeRiskScore(signals: MaintenanceSignals): RiskScore {
       weight: 35,
       description:
         days < 90
-          ? `Last release ${days} days ago — actively maintained`
+          ? `Last release ${days} days ago -actively maintained`
           : days < 365
-          ? `Last release ${days} days ago — updates slowing`
-          : `Last release ${days} days ago — possibly abandoned`,
+          ? `Last release ${days} days ago -updates slowing`
+          : `Last release ${days} days ago -possibly abandoned`,
     });
     totalWeightedScore += score * 35;
     totalWeight += 35;
@@ -274,10 +274,10 @@ function computeRiskScore(signals: MaintenanceSignals): RiskScore {
       weight: 25,
       description:
         count >= 3
-          ? `${count} maintainers — healthy bus factor`
+          ? `${count} maintainers -healthy bus factor`
           : count === 1
-          ? `Solo maintainer — single point of failure`
-          : `No listed maintainers — high risk`,
+          ? `Solo maintainer -single point of failure`
+          : `No listed maintainers -high risk`,
     });
     totalWeightedScore += score * 25;
     totalWeight += 25;
@@ -291,7 +291,7 @@ function computeRiskScore(signals: MaintenanceSignals): RiskScore {
       score,
       weight: 20,
       description: signals.repositoryArchived
-        ? 'Repository is archived — no further updates expected'
+        ? 'Repository is archived -no further updates expected'
         : 'Repository is active',
     });
     totalWeightedScore += score * 20;
@@ -313,8 +313,8 @@ function computeRiskScore(signals: MaintenanceSignals): RiskScore {
       weight: 10,
       description:
         issues < 50
-          ? `${issues} open issues — manageable`
-          : `${issues} open issues — significant backlog`,
+          ? `${issues} open issues -manageable`
+          : `${issues} open issues -significant backlog`,
     });
     totalWeightedScore += score * 10;
     totalWeight += 10;
@@ -328,7 +328,7 @@ function computeRiskScore(signals: MaintenanceSignals): RiskScore {
       name: 'License',
       score,
       weight: 10,
-      description: score === 0 ? `Permissive license (${signals.license})` : `License: ${signals.license} — review terms`,
+      description: score === 0 ? `Permissive license (${signals.license})` : `License: ${signals.license} -review terms`,
     });
     totalWeightedScore += score * 10;
     totalWeight += 10;
@@ -413,16 +413,16 @@ const KNOWN_REPLACEMENTS: Record<string, ReplacementSuggestion[]> = {
     { name: 'npm', reason: 'Standard Node.js package manager', ecosystem: 'npm', url: 'https://www.npmjs.com/' },
   ],
   'tslint': [
-    { name: 'eslint', reason: 'TSLint is deprecated — use ESLint with typescript-eslint', ecosystem: 'npm', url: 'https://www.npmjs.com/package/eslint' },
+    { name: 'eslint', reason: 'TSLint is deprecated -use ESLint with typescript-eslint', ecosystem: 'npm', url: 'https://www.npmjs.com/package/eslint' },
   ],
   'node-sass': [
-    { name: 'sass', reason: 'Dart Sass — the primary Sass implementation', ecosystem: 'npm', url: 'https://www.npmjs.com/package/sass' },
+    { name: 'sass', reason: 'Dart Sass -the primary Sass implementation', ecosystem: 'npm', url: 'https://www.npmjs.com/package/sass' },
   ],
   'left-pad': [
-    { name: 'String.prototype.padStart', reason: 'Native JS method — no dependency needed', ecosystem: 'npm', url: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/padStart' },
+    { name: 'String.prototype.padStart', reason: 'Native JS method -no dependency needed', ecosystem: 'npm', url: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/padStart' },
   ],
   'querystring': [
-    { name: 'URLSearchParams', reason: 'Native Web API — no dependency needed', ecosystem: 'npm', url: 'https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams' },
+    { name: 'URLSearchParams', reason: 'Native Web API -no dependency needed', ecosystem: 'npm', url: 'https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams' },
   ],
   'colors': [
     { name: 'chalk', reason: 'Actively maintained terminal styling', ecosystem: 'npm', url: 'https://www.npmjs.com/package/chalk' },
@@ -482,13 +482,13 @@ const KNOWN_REPLACEMENTS: Record<string, ReplacementSuggestion[]> = {
     { name: 'ky', reason: 'Tiny HTTP client based on Fetch API', ecosystem: 'npm', url: 'https://www.npmjs.com/package/ky' },
   ],
   'bluebird': [
-    { name: 'Native Promises', reason: 'V8 native promises are now fast — no library needed', ecosystem: 'npm', url: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise' },
+    { name: 'Native Promises', reason: 'V8 native promises are now fast -no library needed', ecosystem: 'npm', url: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise' },
   ],
   'async': [
     { name: 'Native async/await', reason: 'Use native async/await instead', ecosystem: 'npm', url: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function' },
   ],
   'q': [
-    { name: 'Native Promises', reason: 'Q is deprecated — use native Promises', ecosystem: 'npm', url: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise' },
+    { name: 'Native Promises', reason: 'Q is deprecated -use native Promises', ecosystem: 'npm', url: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise' },
   ],
   'when': [
     { name: 'Native Promises', reason: 'Use native Promises/async-await', ecosystem: 'npm', url: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise' },
@@ -514,7 +514,7 @@ const KNOWN_REPLACEMENTS: Record<string, ReplacementSuggestion[]> = {
   ],
   'bcrypt-nodejs': [
     { name: 'bcrypt', reason: 'Maintained native bcrypt binding', ecosystem: 'npm', url: 'https://www.npmjs.com/package/bcrypt' },
-    { name: 'bcryptjs', reason: 'Pure JS bcrypt — no native deps', ecosystem: 'npm', url: 'https://www.npmjs.com/package/bcryptjs' },
+    { name: 'bcryptjs', reason: 'Pure JS bcrypt -no native deps', ecosystem: 'npm', url: 'https://www.npmjs.com/package/bcryptjs' },
   ],
   'node-uuid': [
     { name: 'uuid', reason: 'node-uuid was renamed to uuid', ecosystem: 'npm', url: 'https://www.npmjs.com/package/uuid' },
@@ -551,10 +551,10 @@ const KNOWN_REPLACEMENTS: Record<string, ReplacementSuggestion[]> = {
     { name: 'handlebars', reason: 'Actively maintained Mustache superset', ecosystem: 'npm', url: 'https://www.npmjs.com/package/handlebars' },
   ],
   'crossenv': [
-    { name: 'cross-env', reason: 'crossenv was a typosquat malware — use cross-env', ecosystem: 'npm', url: 'https://www.npmjs.com/package/cross-env' },
+    { name: 'cross-env', reason: 'crossenv was a typosquat malware -use cross-env', ecosystem: 'npm', url: 'https://www.npmjs.com/package/cross-env' },
   ],
   'event-stream': [
-    { name: 'Highland', reason: 'event-stream was compromised — use Highland or native streams', ecosystem: 'npm', url: 'https://www.npmjs.com/package/highland' },
+    { name: 'Highland', reason: 'event-stream was compromised -use Highland or native streams', ecosystem: 'npm', url: 'https://www.npmjs.com/package/highland' },
   ],
   // ---- Python ----
   'nose': [
@@ -576,16 +576,16 @@ const KNOWN_REPLACEMENTS: Record<string, ReplacementSuggestion[]> = {
     { name: 'pydocstyle', reason: 'pep257 was renamed to pydocstyle', ecosystem: 'pypi', url: 'https://pypi.org/project/pydocstyle/' },
   ],
   'sklearn': [
-    { name: 'scikit-learn', reason: 'sklearn is the unofficial name — use scikit-learn', ecosystem: 'pypi', url: 'https://pypi.org/project/scikit-learn/' },
+    { name: 'scikit-learn', reason: 'sklearn is the unofficial name -use scikit-learn', ecosystem: 'pypi', url: 'https://pypi.org/project/scikit-learn/' },
   ],
   'BeautifulSoup': [
-    { name: 'beautifulsoup4', reason: 'BS3 is unmaintained — use beautifulsoup4', ecosystem: 'pypi', url: 'https://pypi.org/project/beautifulsoup4/' },
+    { name: 'beautifulsoup4', reason: 'BS3 is unmaintained -use beautifulsoup4', ecosystem: 'pypi', url: 'https://pypi.org/project/beautifulsoup4/' },
   ],
   'PIL': [
-    { name: 'Pillow', reason: 'PIL is unmaintained — Pillow is the active fork', ecosystem: 'pypi', url: 'https://pypi.org/project/Pillow/' },
+    { name: 'Pillow', reason: 'PIL is unmaintained -Pillow is the active fork', ecosystem: 'pypi', url: 'https://pypi.org/project/Pillow/' },
   ],
   'fabric': [
-    { name: 'fabric2', reason: 'Fabric 1.x is abandoned — use Fabric 2+', ecosystem: 'pypi', url: 'https://pypi.org/project/fabric/' },
+    { name: 'fabric2', reason: 'Fabric 1.x is abandoned -use Fabric 2+', ecosystem: 'pypi', url: 'https://pypi.org/project/fabric/' },
   ],
   'mysql-python': [
     { name: 'mysqlclient', reason: 'Maintained fork of mysql-python', ecosystem: 'pypi', url: 'https://pypi.org/project/mysqlclient/' },
@@ -602,7 +602,7 @@ const KNOWN_REPLACEMENTS: Record<string, ReplacementSuggestion[]> = {
   ],
   // ---- Ruby ----
   'iconv': [
-    { name: 'String#encode', reason: 'Ruby stdlib encoding — no gem needed', ecosystem: 'rubygems', url: 'https://ruby-doc.org/core/String.html#method-i-encode' },
+    { name: 'String#encode', reason: 'Ruby stdlib encoding -no gem needed', ecosystem: 'rubygems', url: 'https://ruby-doc.org/core/String.html#method-i-encode' },
   ],
   'test-unit': [
     { name: 'rspec', reason: 'Modern Ruby testing framework', ecosystem: 'rubygems', url: 'https://rubygems.org/gems/rspec' },

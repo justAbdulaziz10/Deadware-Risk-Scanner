@@ -1,15 +1,16 @@
 import type { Metadata } from 'next';
 import { config } from '@/lib/config';
+import ClientProviders from '@/components/ClientProviders';
 import './globals.css';
 
 export const metadata: Metadata = {
   metadataBase: new URL(config.siteUrl),
   title: {
-    default: 'Deadware Risk Scanner — Find Abandoned Dependencies Before They Break Your Build',
+    default: 'Deadware Risk Scanner | Find Abandoned Dependencies Before They Break Your Build',
     template: '%s | Deadware Risk Scanner',
   },
   description:
-    'Free open-source dependency scanner that detects abandoned npm, PyPI, and RubyGems packages. Get CVE vulnerability scanning, risk scores, bus factor analysis, deprecation warnings, and replacement suggestions. No signup required — 100% client-side.',
+    'Free open-source dependency scanner that detects abandoned npm, PyPI, and RubyGems packages. Get CVE vulnerability scanning, risk scores, bus factor analysis, deprecation warnings, and replacement suggestions. No signup required. 100% client-side.',
   keywords: [
     'deadware scanner',
     'dependency risk scanner',
@@ -51,7 +52,7 @@ export const metadata: Metadata = {
     locale: 'en_US',
     url: config.siteUrl,
     siteName: 'Deadware Risk Scanner',
-    title: 'Deadware Risk Scanner — Detect Abandoned & Vulnerable Dependencies',
+    title: 'Deadware Risk Scanner | Detect Abandoned & Vulnerable Dependencies',
     description:
       'Free tool to scan npm, PyPI, RubyGems, Go, and Cargo dependencies for abandoned packages, CVE vulnerabilities, and supply chain risks. Get instant risk scores and replacement suggestions.',
     images: [
@@ -65,7 +66,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Deadware Risk Scanner — Find Abandoned Dependencies',
+    title: 'Deadware Risk Scanner | Find Abandoned Dependencies',
     description: 'Free CVE & abandonment scanner for npm, PyPI, RubyGems, Go, and Cargo. No signup required.',
     images: ['/og-image.png'],
   },
@@ -199,7 +200,7 @@ export default function RootLayout({
         />
       </head>
       <body className="bg-surface-950 text-surface-100 min-h-screen antialiased">
-        {children}
+        <ClientProviders>{children}</ClientProviders>
       </body>
     </html>
   );

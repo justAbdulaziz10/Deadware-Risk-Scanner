@@ -5,7 +5,7 @@ import Navbar from '@/components/Navbar';
 import { Shield } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Payment Successful — Deadware Risk Scanner',
+  title: 'Payment Successful | Deadware Risk Scanner',
   description: 'Your plan has been activated. Start scanning unlimited dependencies.',
   robots: { index: false, follow: false },
 };

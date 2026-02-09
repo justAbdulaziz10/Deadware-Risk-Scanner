@@ -6,7 +6,7 @@ import { ChevronDown } from 'lucide-react';
 const FAQ_ITEMS = [
   {
     q: 'What is "deadware" and why should I care?',
-    a: 'Deadware refers to software dependencies that are no longer maintained — no updates, no security patches, no bug fixes. If you depend on deadware, you\'re exposed to unpatched vulnerabilities, compatibility issues, and potential supply chain attacks. Studies show that over 20% of npm packages haven\'t been updated in 2+ years.',
+    a: 'Deadware refers to software dependencies that are no longer maintained: no updates, no security patches, no bug fixes. If you depend on deadware, you\'re exposed to unpatched vulnerabilities, compatibility issues, and potential supply chain attacks. Studies show that over 20% of npm packages haven\'t been updated in 2+ years.',
   },
   {
     q: 'How does the risk scoring work?',
@@ -26,11 +26,11 @@ const FAQ_ITEMS = [
   },
   {
     q: 'How is this different from Snyk, Dependabot, or Socket.dev?',
-    a: 'Most security tools focus only on known CVEs. Deadware Risk Scanner goes further by detecting abandoned and unmaintained packages BEFORE they become a security risk. We analyze bus factor, release frequency, repository status, and deprecation — risks that CVE-only tools miss entirely. Plus, we\'re 100% client-side and free to use, with no signup required.',
+    a: 'Most security tools focus only on known CVEs. Deadware Risk Scanner goes further by detecting abandoned and unmaintained packages BEFORE they become a security risk. We analyze bus factor, release frequency, repository status, and deprecation, risks that CVE-only tools miss entirely. Plus, we\'re 100% client-side and free to use, with no signup required.',
   },
   {
     q: 'Do I need a GitHub token?',
-    a: 'A GitHub token is optional but recommended. Without it, you get registry data and CVE scanning. With a token (public_repo scope), you also get repository archived status, open issue counts, security policy detection, and the ability to scan your private repositories — making the risk assessment significantly more accurate.',
+    a: 'A GitHub token is optional but recommended. Without it, you get registry data and CVE scanning. With a token (public_repo scope), you also get repository archived status, open issue counts, security policy detection, and the ability to scan your private repositories, making the risk assessment significantly more accurate.',
   },
   {
     q: 'What does the "replacement suggestions" feature do?',

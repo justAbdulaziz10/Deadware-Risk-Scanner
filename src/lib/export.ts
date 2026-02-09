@@ -45,14 +45,14 @@ function generatePDFHtml(result: ScanResult): string {
         <td style="padding:8px;border-bottom:1px solid #e5e7eb;color:${riskColor(p.risk.level)};font-weight:600;">${p.risk.overall}/100 (${p.risk.level.toUpperCase()})</td>
         <td style="padding:8px;border-bottom:1px solid #e5e7eb;">${p.signals.daysSinceLastRelease ?? 'N/A'} days</td>
         <td style="padding:8px;border-bottom:1px solid #e5e7eb;">${p.signals.vulnerabilities.length > 0 ? `<span style="color:#ef4444;font-weight:600;">${p.signals.vulnerabilities.length}</span>` : '0'}</td>
-        <td style="padding:8px;border-bottom:1px solid #e5e7eb;">${p.replacements.length > 0 ? p.replacements.map(r => r.name).join(', ') : '—'}</td>
+        <td style="padding:8px;border-bottom:1px solid #e5e7eb;">${p.replacements.length > 0 ? p.replacements.map(r => r.name).join(', ') : 'None'}</td>
       </tr>
     `).join('');
 
   return `<!DOCTYPE html>
 <html>
 <head>
-  <title>Deadware Risk Report — ${new Date(result.createdAt).toLocaleDateString()}</title>
+  <title>Deadware Risk Report | ${new Date(result.createdAt).toLocaleDateString()}</title>
   <style>
     body{font-family:system-ui,-apple-system,sans-serif;margin:40px;color:#1f2937;}
     h1{font-size:24px;margin-bottom:4px;}
@@ -186,7 +186,7 @@ export function generateGitHubActionsYAML(ecosystem: string): string {
   };
   const file = depFiles[ecosystem] || 'package.json';
 
-  return `# Deadware Risk Scanner — Automated Dependency Audit
+  return `# Deadware Risk Scanner - Automated Dependency Audit
 # Add this to .github/workflows/deadware-scan.yml
 name: Deadware Risk Scan
 
@@ -303,7 +303,7 @@ function generatePurl(ecosystem: string, name: string, version: string): string 
 export function generateShareData(result: ScanResult): { text: string; title: string } {
   const { summary } = result;
   const text = [
-    `Dependency Health Report — Score: ${summary.overallHealthScore}/100`,
+    `Dependency Health Report | Score: ${summary.overallHealthScore}/100`,
     `${summary.totalPackages} packages scanned (${result.ecosystem.toUpperCase()})`,
     summary.critical > 0 ? `${summary.critical} critical risk` : null,
     summary.high > 0 ? `${summary.high} high risk` : null,
@@ -316,7 +316,7 @@ export function generateShareData(result: ScanResult): { text: string; title: st
     .join('\n');
 
   return {
-    title: `Deadware Risk Report — Health Score: ${summary.overallHealthScore}/100`,
+    title: `Deadware Risk Report | Health Score: ${summary.overallHealthScore}/100`,
     text,
   };
 }

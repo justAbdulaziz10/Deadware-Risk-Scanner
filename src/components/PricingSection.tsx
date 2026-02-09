@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { CheckCircle2, Zap, Shield, Crown, TrendingDown } from 'lucide-react';
 import { config, isPolarConfigured, getCheckoutUrl } from '@/lib/config';
+import { useT } from './I18nProvider';
 
 const COMPETITORS = [
   { name: 'Snyk', price: '$399', per: '/mo', note: 'Team plan' },
@@ -14,6 +15,7 @@ export default function PricingSection() {
   const paymentsReady = isPolarConfigured();
   const proPrice = Number(config.pricing.proPrice);
   const teamPrice = Number(config.pricing.teamPrice);
+  const t = useT();
 
   return (
     <section id="pricing" className="py-24 px-4">
@@ -21,14 +23,13 @@ export default function PricingSection() {
         <div className="text-center mb-6">
           <div className="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-medium px-3 py-1.5 rounded-full mb-4">
             <TrendingDown className="w-3.5 h-3.5" />
-            Save 97% vs enterprise tools
+            {t.pricing_badge}
           </div>
           <h2 className="text-3xl sm:text-4xl font-bold mb-4">
-            Enterprise Security, <span className="gradient-text">Indie-Hacker Price</span>
+            {t.pricing_title_1} <span className="gradient-text">{t.pricing_title_2}</span>
           </h2>
           <p className="text-surface-400 text-lg max-w-2xl mx-auto">
-            The same vulnerability + abandonment scanning that enterprises pay $400/mo for —
-            starting at <strong className="text-surface-200">$0</strong>.
+            {t.pricing_subtitle} <strong className="text-surface-200">{t.pricing_free_price}</strong>.
           </p>
         </div>
 
@@ -52,13 +53,13 @@ export default function PricingSection() {
             <div className="mb-6">
               <div className="flex items-center gap-2 mb-3">
                 <Shield className="w-5 h-5 text-surface-400" />
-                <h3 className="text-lg font-semibold">Free</h3>
+                <h3 className="text-lg font-semibold">{t.pricing_free}</h3>
               </div>
               <div className="flex items-baseline gap-1">
-                <span className="text-4xl font-bold">$0</span>
+                <span className="text-4xl font-bold">{t.pricing_free_price}</span>
                 <span className="text-surface-400">/forever</span>
               </div>
-              <p className="text-xs text-surface-500 mt-2">No credit card required</p>
+              <p className="text-xs text-surface-500 mt-2">{t.pricing_no_cc}</p>
             </div>
             <ul className="space-y-3 mb-8 flex-1">
               {[
@@ -79,24 +80,24 @@ export default function PricingSection() {
               href="/signup"
               className="w-full py-3 rounded-lg border border-surface-600 text-surface-200 text-center font-medium hover:bg-surface-800 transition-colors text-sm block"
             >
-              Start Free
+              {t.pricing_start_free}
             </Link>
           </div>
 
-          {/* Pro — highlighted */}
+          {/* Pro - highlighted */}
           <div className="bg-surface-900/50 border-2 border-primary-500 rounded-2xl p-8 flex flex-col relative shadow-lg shadow-primary-500/5">
             <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary-600 text-white text-xs font-semibold px-4 py-1 rounded-full flex items-center gap-1.5">
               <Zap className="w-3 h-3" />
-              MOST POPULAR
+              {t.pricing_most_popular}
             </div>
             <div className="mb-6">
               <div className="flex items-center gap-2 mb-3">
                 <Zap className="w-5 h-5 text-primary-400" />
-                <h3 className="text-lg font-semibold">Pro</h3>
+                <h3 className="text-lg font-semibold">{t.pricing_pro}</h3>
               </div>
               <div className="flex items-baseline gap-1">
                 <span className="text-4xl font-bold">${proPrice}</span>
-                <span className="text-surface-400">/month</span>
+                <span className="text-surface-400">{t.pricing_per_month}</span>
               </div>
               <p className="text-xs text-emerald-400 mt-2">
                 Save ${399 - proPrice}/mo vs Snyk
@@ -127,9 +128,9 @@ export default function PricingSection() {
               } : undefined}
               className="w-full py-3.5 rounded-lg bg-primary-600 hover:bg-primary-500 text-white text-center font-semibold transition-colors text-sm block"
             >
-              Upgrade to Pro
+              {t.pricing_upgrade_pro}
             </a>
-            <p className="text-[10px] text-surface-500 text-center mt-3">Cancel anytime. No lock-in.</p>
+            <p className="text-[10px] text-surface-500 text-center mt-3">{t.pricing_cancel}</p>
           </div>
 
           {/* Team */}
@@ -137,14 +138,14 @@ export default function PricingSection() {
             <div className="mb-6">
               <div className="flex items-center gap-2 mb-3">
                 <Crown className="w-5 h-5 text-purple-400" />
-                <h3 className="text-lg font-semibold">Team</h3>
+                <h3 className="text-lg font-semibold">{t.pricing_team}</h3>
               </div>
               <div className="flex items-baseline gap-1">
                 <span className="text-4xl font-bold">${teamPrice}</span>
-                <span className="text-surface-400">/month</span>
+                <span className="text-surface-400">{t.pricing_per_month}</span>
               </div>
               <p className="text-xs text-emerald-400 mt-2">
-                ${Math.round(teamPrice / 10)}/seat — cheaper than a coffee
+                ${Math.round(teamPrice / 10)}/seat, cheaper than a coffee
               </p>
             </div>
             <ul className="space-y-3 mb-8 flex-1">
@@ -171,14 +172,14 @@ export default function PricingSection() {
               } : undefined}
               className="w-full py-3 rounded-lg border border-surface-600 text-surface-200 text-center font-medium hover:bg-surface-800 transition-colors text-sm block"
             >
-              Upgrade to Team
+              {t.pricing_upgrade_team}
             </a>
           </div>
         </div>
 
         {/* Social proof / trust */}
         <div className="mt-12 text-center">
-          <p className="text-xs text-surface-500 mb-4">Trusted by developers scanning dependencies across</p>
+          <p className="text-xs text-surface-500 mb-4">{t.pricing_trust_text}</p>
           <div className="flex justify-center gap-8 flex-wrap">
             {[
               { label: 'npm', color: 'text-red-400' },
