@@ -3,6 +3,8 @@ import Footer from '@/components/Footer';
 import Link from 'next/link';
 import PricingSection from '@/components/PricingSection';
 import { config } from '@/lib/config';
+import FAQSection from '@/components/FAQSection';
+import ComparisonSection from '@/components/ComparisonSection';
 import {
   Shield,
   Search,
@@ -20,6 +22,7 @@ import {
   Star,
   FileJson,
   Badge,
+  ShieldAlert,
 } from 'lucide-react';
 
 export default function HomePage() {
@@ -106,7 +109,7 @@ export default function HomePage() {
               <div className="text-sm text-surface-400 mt-1">Client-Side Processing</div>
             </div>
             <div>
-              <div className="text-3xl font-bold text-surface-100">5</div>
+              <div className="text-3xl font-bold text-surface-100">7</div>
               <div className="text-sm text-surface-400 mt-1">Risk Factors Analyzed</div>
             </div>
             <div>
@@ -180,6 +183,12 @@ export default function HomePage() {
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {[
                 {
+                  icon: ShieldAlert,
+                  title: 'CVE Vulnerability Scanning',
+                  desc: 'Automatically checks every dependency against the OSV database for known security vulnerabilities (CVEs) with severity ratings.',
+                  color: 'text-red-500',
+                },
+                {
                   icon: AlertTriangle,
                   title: 'Deadware Risk Score',
                   desc: 'Every package gets a 0-100 risk score based on release freshness, bus factor, repository status, and more.',
@@ -249,6 +258,12 @@ export default function HomePage() {
 
         {/* Pricing */}
         <PricingSection />
+
+        {/* Comparison */}
+        <ComparisonSection />
+
+        {/* FAQ */}
+        <FAQSection />
 
         {/* CTA + Support */}
         <section className="py-24 px-4 bg-surface-900/30 border-t border-surface-800">

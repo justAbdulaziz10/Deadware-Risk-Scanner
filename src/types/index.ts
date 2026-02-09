@@ -8,6 +8,14 @@ export interface ParsedPackage {
 
 export type RiskLevel = 'critical' | 'high' | 'medium' | 'low' | 'healthy';
 
+export interface Vulnerability {
+  id: string;
+  summary: string;
+  severity: 'CRITICAL' | 'HIGH' | 'MODERATE' | 'LOW' | 'UNKNOWN';
+  aliases: string[];
+  url: string;
+}
+
 export interface MaintenanceSignals {
   lastReleaseDate: string | null;
   daysSinceLastRelease: number | null;
@@ -20,6 +28,8 @@ export interface MaintenanceSignals {
   description: string | null;
   homepage: string | null;
   repository: string | null;
+  deprecated: string | null;
+  vulnerabilities: Vulnerability[];
 }
 
 export interface RiskScore {
@@ -68,6 +78,8 @@ export interface ScanSummary {
   low: number;
   healthy: number;
   overallHealthScore: number; // 0-100, higher = healthier
+  totalVulnerabilities: number;
+  deprecatedCount: number;
 }
 
 export interface UserSettings {

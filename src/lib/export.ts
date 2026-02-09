@@ -40,11 +40,11 @@ function generatePDFHtml(result: ScanResult): string {
     .sort((a, b) => b.risk.overall - a.risk.overall)
     .map((p: PackageAnalysis) => `
       <tr>
-        <td style="padding:8px;border-bottom:1px solid #e5e7eb;">${p.package.name}</td>
+        <td style="padding:8px;border-bottom:1px solid #e5e7eb;">${p.package.name}${p.signals.deprecated ? ' <span style="color:#ef4444;font-size:11px;">[DEPRECATED]</span>' : ''}</td>
         <td style="padding:8px;border-bottom:1px solid #e5e7eb;">${p.package.version}</td>
         <td style="padding:8px;border-bottom:1px solid #e5e7eb;color:${riskColor(p.risk.level)};font-weight:600;">${p.risk.overall}/100 (${p.risk.level.toUpperCase()})</td>
         <td style="padding:8px;border-bottom:1px solid #e5e7eb;">${p.signals.daysSinceLastRelease ?? 'N/A'} days</td>
-        <td style="padding:8px;border-bottom:1px solid #e5e7eb;">${p.signals.maintainerCount ?? 'N/A'}</td>
+        <td style="padding:8px;border-bottom:1px solid #e5e7eb;">${p.signals.vulnerabilities.length > 0 ? `<span style="color:#ef4444;font-weight:600;">${p.signals.vulnerabilities.length}</span>` : '0'}</td>
         <td style="padding:8px;border-bottom:1px solid #e5e7eb;">${p.replacements.length > 0 ? p.replacements.map(r => r.name).join(', ') : '—'}</td>
       </tr>
     `).join('');
@@ -100,7 +100,7 @@ function generatePDFHtml(result: ScanResult): string {
         <th>Version</th>
         <th>Risk Score</th>
         <th>Last Release</th>
-        <th>Maintainers</th>
+        <th>Vulns</th>
         <th>Replacements</th>
       </tr>
     </thead>
@@ -114,6 +114,50 @@ function generatePDFHtml(result: ScanResult): string {
   </div>
 </body>
 </html>`;
+}
+
+// ---- CSV Export ----
+
+export function exportToCSV(result: ScanResult): void {
+  const headers = [
+    'Package',
+    'Version',
+    'Ecosystem',
+    'Risk Score',
+    'Risk Level',
+    'Days Since Release',
+    'Maintainers',
+    'Deprecated',
+    'Vulnerabilities',
+    'License',
+    'Replacements',
+  ];
+
+  const rows = result.packages
+    .sort((a, b) => b.risk.overall - a.risk.overall)
+    .map((p) => [
+      csvEscape(p.package.name),
+      csvEscape(p.package.version),
+      p.package.ecosystem,
+      p.risk.overall.toString(),
+      p.risk.level.toUpperCase(),
+      p.signals.daysSinceLastRelease?.toString() ?? 'N/A',
+      p.signals.maintainerCount?.toString() ?? 'N/A',
+      p.signals.deprecated ? 'Yes' : 'No',
+      p.signals.vulnerabilities.length.toString(),
+      csvEscape(p.signals.license ?? 'Unknown'),
+      csvEscape(p.replacements.map((r) => r.name).join('; ') || 'None'),
+    ]);
+
+  const csv = [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
+  downloadFile(csv, `deadware-scan-${result.id.slice(0, 8)}.csv`, 'text/csv');
+}
+
+function csvEscape(value: string): string {
+  if (value.includes(',') || value.includes('"') || value.includes('\n')) {
+    return `"${value.replace(/"/g, '""')}"`;
+  }
+  return value;
 }
 
 // ---- CI Badge ----
