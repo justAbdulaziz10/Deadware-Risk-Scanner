@@ -12,6 +12,8 @@ import {
   AlertCircle,
   Scale,
   Archive,
+  ShieldAlert,
+  Ban,
 } from 'lucide-react';
 
 export default function PackageCard({ analysis }: { analysis: PackageAnalysis }) {
@@ -32,6 +34,16 @@ export default function PackageCard({ analysis }: { analysis: PackageAnalysis })
               <span className="text-xs text-surface-500 bg-surface-800 px-2 py-0.5 rounded">
                 {pkg.version}
               </span>
+              {signals.deprecated && (
+                <span className="text-[10px] font-semibold bg-red-500/15 text-red-400 border border-red-500/20 px-1.5 py-0.5 rounded flex items-center gap-1">
+                  <Ban className="w-3 h-3" /> DEPRECATED
+                </span>
+              )}
+              {signals.vulnerabilities.length > 0 && (
+                <span className="text-[10px] font-semibold bg-amber-500/15 text-amber-400 border border-amber-500/20 px-1.5 py-0.5 rounded flex items-center gap-1">
+                  <ShieldAlert className="w-3 h-3" /> {signals.vulnerabilities.length} CVE{signals.vulnerabilities.length > 1 ? 's' : ''}
+                </span>
+              )}
             </div>
             {signals.description && (
               <p className="text-xs text-surface-500 mt-1 truncate max-w-md">
@@ -56,6 +68,60 @@ export default function PackageCard({ analysis }: { analysis: PackageAnalysis })
           {error && (
             <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3 text-sm text-red-400">
               {error}
+            </div>
+          )}
+
+          {/* Deprecation warning */}
+          {signals.deprecated && (
+            <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3 flex items-start gap-2">
+              <Ban className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
+              <div>
+                <span className="text-sm font-medium text-red-400">Deprecated</span>
+                <p className="text-xs text-red-400/80 mt-0.5">{signals.deprecated}</p>
+              </div>
+            </div>
+          )}
+
+          {/* Vulnerabilities */}
+          {signals.vulnerabilities.length > 0 && (
+            <div>
+              <h4 className="text-xs font-semibold text-red-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                <ShieldAlert className="w-3.5 h-3.5" />
+                Known Vulnerabilities ({signals.vulnerabilities.length})
+              </h4>
+              <div className="space-y-1.5">
+                {signals.vulnerabilities.slice(0, 10).map((vuln) => (
+                  <a
+                    key={vuln.id}
+                    href={vuln.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between bg-red-500/5 border border-red-500/10 rounded-lg p-2.5 hover:border-red-500/30 transition-colors"
+                  >
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="text-xs font-mono font-medium text-surface-200">{vuln.id}</span>
+                        <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${
+                          vuln.severity === 'CRITICAL' ? 'bg-red-500/20 text-red-400' :
+                          vuln.severity === 'HIGH' ? 'bg-orange-500/20 text-orange-400' :
+                          vuln.severity === 'MODERATE' ? 'bg-yellow-500/20 text-yellow-400' :
+                          vuln.severity === 'LOW' ? 'bg-blue-500/20 text-blue-400' :
+                          'bg-surface-700 text-surface-400'
+                        }`}>
+                          {vuln.severity}
+                        </span>
+                      </div>
+                      <p className="text-xs text-surface-500 mt-1 truncate">{vuln.summary}</p>
+                    </div>
+                    <ExternalLink className="w-3 h-3 text-surface-500 shrink-0 ml-2" />
+                  </a>
+                ))}
+                {signals.vulnerabilities.length > 10 && (
+                  <p className="text-xs text-surface-500 text-center py-1">
+                    +{signals.vulnerabilities.length - 10} more vulnerabilities
+                  </p>
+                )}
+              </div>
             </div>
           )}
 

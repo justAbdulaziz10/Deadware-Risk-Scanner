@@ -3,13 +3,14 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { createClient } from '@/lib/supabase/client';
-import { Shield, Mail, Lock, Loader2, AlertTriangle } from 'lucide-react';
+import { createClient, isSupabaseConfigured } from '@/lib/supabase/client';
+import { Shield, Mail, Lock, Loader2, AlertTriangle, Github } from 'lucide-react';
 
 export default function LoginForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [ghLoading, setGhLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
@@ -34,6 +35,29 @@ export default function LoginForm() {
 
     router.push('/scanner');
     router.refresh();
+  }
+
+  async function handleGithubLogin() {
+    const supabase = createClient();
+    if (!supabase) {
+      setError('Authentication is not configured yet.');
+      return;
+    }
+    setGhLoading(true);
+    setError(null);
+
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'github',
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+        scopes: 'read:user repo',
+      },
+    });
+
+    if (error) {
+      setError(error.message);
+      setGhLoading(false);
+    }
   }
 
   return (
@@ -92,6 +116,22 @@ export default function LoginForm() {
         >
           {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
           {loading ? 'Logging in...' : 'Log In'}
+        </button>
+
+        <div className="relative flex items-center gap-3 py-1">
+          <div className="flex-1 h-px bg-surface-700" />
+          <span className="text-xs text-surface-500">or</span>
+          <div className="flex-1 h-px bg-surface-700" />
+        </div>
+
+        <button
+          type="button"
+          onClick={handleGithubLogin}
+          disabled={ghLoading}
+          className="w-full bg-surface-800 hover:bg-surface-700 disabled:bg-surface-700 disabled:cursor-not-allowed text-surface-200 border border-surface-700 py-3 rounded-xl font-semibold flex items-center justify-center gap-2 transition-colors"
+        >
+          {ghLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Github className="w-5 h-5" />}
+          {ghLoading ? 'Redirecting...' : 'Continue with GitHub'}
         </button>
 
         <p className="text-center text-sm text-surface-500">

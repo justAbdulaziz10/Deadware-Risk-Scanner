@@ -1,6 +1,7 @@
 import {
   ParsedPackage,
   MaintenanceSignals,
+  Vulnerability,
   RiskScore,
   RiskFactor,
   RiskLevel,
@@ -29,6 +30,9 @@ async function fetchNpmSignals(pkg: ParsedPackage): Promise<MaintenanceSignals> 
   const latestData = latest ? data.versions?.[latest] : null;
   const maintainers = data.maintainers || [];
 
+  // Check deprecation on latest version
+  const deprecatedMsg = latestData?.deprecated || null;
+
   return {
     lastReleaseDate,
     daysSinceLastRelease: daysSince,
@@ -44,6 +48,8 @@ async function fetchNpmSignals(pkg: ParsedPackage): Promise<MaintenanceSignals> 
       typeof data.repository === 'string'
         ? data.repository
         : data.repository?.url?.replace(/^git\+/, '').replace(/\.git$/, '') || null,
+    deprecated: deprecatedMsg,
+    vulnerabilities: [],
   };
 }
 
@@ -77,6 +83,8 @@ async function fetchPypiSignals(pkg: ParsedPackage): Promise<MaintenanceSignals>
       info.project_urls?.Repository ||
       info.project_urls?.GitHub ||
       null,
+    deprecated: null,
+    vulnerabilities: [],
   };
 }
 
@@ -100,6 +108,8 @@ async function fetchRegistrySignals(pkg: ParsedPackage): Promise<MaintenanceSign
         description: null,
         homepage: null,
         repository: null,
+        deprecated: null,
+        vulnerabilities: [],
       };
   }
 }
@@ -135,6 +145,76 @@ export async function enrichWithGitHub(
   } catch {
     return signals;
   }
+}
+
+// ---- OSV Vulnerability scanning ----
+
+const ECOSYSTEM_MAP: Record<string, string> = {
+  npm: 'npm',
+  pypi: 'PyPI',
+  rubygems: 'RubyGems',
+  go: 'Go',
+  cargo: 'crates.io',
+};
+
+async function fetchVulnerabilities(pkg: ParsedPackage): Promise<Vulnerability[]> {
+  const osvEcosystem = ECOSYSTEM_MAP[pkg.ecosystem];
+  if (!osvEcosystem) return [];
+
+  try {
+    const res = await fetch('https://api.osv.dev/v1/query', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        version: pkg.version.replace(/^[\^~>=<! ]+/, ''),
+        package: { name: pkg.name, ecosystem: osvEcosystem },
+      }),
+    });
+
+    if (!res.ok) return [];
+    const data = await res.json();
+    const vulns: Vulnerability[] = (data.vulns || []).map((v: Record<string, unknown>) => {
+      const severity = extractSeverity(v);
+      const aliases = (v.aliases as string[]) || [];
+      return {
+        id: v.id as string,
+        summary: (v.summary as string) || 'No description available',
+        severity,
+        aliases,
+        url: `https://osv.dev/vulnerability/${v.id}`,
+      };
+    });
+    return vulns;
+  } catch {
+    return [];
+  }
+}
+
+function extractSeverity(vuln: Record<string, unknown>): Vulnerability['severity'] {
+  const severityArr = vuln.severity as Array<{ type: string; score: string }> | undefined;
+  if (severityArr && severityArr.length > 0) {
+    const cvss = severityArr.find((s) => s.type === 'CVSS_V3' || s.type === 'CVSS_V4');
+    if (cvss) {
+      const score = parseFloat(cvss.score);
+      if (!isNaN(score)) {
+        if (score >= 9.0) return 'CRITICAL';
+        if (score >= 7.0) return 'HIGH';
+        if (score >= 4.0) return 'MODERATE';
+        return 'LOW';
+      }
+    }
+  }
+
+  const dbSpecific = vuln.database_specific as Record<string, unknown> | undefined;
+  if (dbSpecific?.severity) {
+    const s = (dbSpecific.severity as string).toUpperCase();
+    if (s === 'CRITICAL') return 'CRITICAL';
+    if (s === 'HIGH') return 'HIGH';
+    if (s === 'MODERATE' || s === 'MEDIUM') return 'MODERATE';
+    if (s === 'LOW') return 'LOW';
+  }
+
+  return 'UNKNOWN';
 }
 
 // ---- Risk scoring ----
@@ -245,6 +325,40 @@ function computeRiskScore(signals: MaintenanceSignals): RiskScore {
     totalWeight += 10;
   }
 
+  // Factor 6: Known Vulnerabilities (weight: 30)
+  if (signals.vulnerabilities.length > 0) {
+    const vulnCount = signals.vulnerabilities.length;
+    const hasCritical = signals.vulnerabilities.some((v) => v.severity === 'CRITICAL');
+    const hasHigh = signals.vulnerabilities.some((v) => v.severity === 'HIGH');
+    let score: number;
+    if (hasCritical) score = 100;
+    else if (hasHigh) score = 85;
+    else if (vulnCount >= 5) score = 75;
+    else if (vulnCount >= 2) score = 60;
+    else score = 45;
+
+    factors.push({
+      name: 'Security Vulnerabilities',
+      score,
+      weight: 30,
+      description: `${vulnCount} known vulnerabilit${vulnCount === 1 ? 'y' : 'ies'}${hasCritical ? ' (includes CRITICAL)' : hasHigh ? ' (includes HIGH)' : ''}`,
+    });
+    totalWeightedScore += score * 30;
+    totalWeight += 30;
+  }
+
+  // Factor 7: Deprecated (weight: 25)
+  if (signals.deprecated) {
+    factors.push({
+      name: 'Deprecated',
+      score: 90,
+      weight: 25,
+      description: `Package is deprecated: ${signals.deprecated}`,
+    });
+    totalWeightedScore += 90 * 25;
+    totalWeight += 25;
+  }
+
   // Compute overall
   const overall = totalWeight > 0 ? Math.round(totalWeightedScore / totalWeight) : 50;
   const level = riskLevelFromScore(overall);
@@ -263,26 +377,34 @@ function riskLevelFromScore(score: number): RiskLevel {
 // ---- Known replacements database ----
 
 const KNOWN_REPLACEMENTS: Record<string, ReplacementSuggestion[]> = {
-  // npm
+  // ---- npm ----
   'request': [
-    { name: 'node-fetch', reason: 'Modern, lightweight HTTP client', ecosystem: 'npm', url: 'https://www.npmjs.com/package/node-fetch' },
-    { name: 'axios', reason: 'Full-featured HTTP client', ecosystem: 'npm', url: 'https://www.npmjs.com/package/axios' },
     { name: 'undici', reason: 'Official Node.js HTTP/1.1 client', ecosystem: 'npm', url: 'https://www.npmjs.com/package/undici' },
+    { name: 'node-fetch', reason: 'Lightweight fetch polyfill', ecosystem: 'npm', url: 'https://www.npmjs.com/package/node-fetch' },
+    { name: 'axios', reason: 'Full-featured HTTP client', ecosystem: 'npm', url: 'https://www.npmjs.com/package/axios' },
+  ],
+  'request-promise': [
+    { name: 'undici', reason: 'Built-in promise support', ecosystem: 'npm', url: 'https://www.npmjs.com/package/undici' },
+    { name: 'axios', reason: 'Promise-based HTTP client', ecosystem: 'npm', url: 'https://www.npmjs.com/package/axios' },
   ],
   'moment': [
     { name: 'date-fns', reason: 'Modular, tree-shakable date utility', ecosystem: 'npm', url: 'https://www.npmjs.com/package/date-fns' },
     { name: 'dayjs', reason: 'Tiny Moment.js alternative with same API', ecosystem: 'npm', url: 'https://www.npmjs.com/package/dayjs' },
     { name: 'luxon', reason: 'Modern date library by Moment.js team', ecosystem: 'npm', url: 'https://www.npmjs.com/package/luxon' },
   ],
+  'moment-timezone': [
+    { name: 'date-fns-tz', reason: 'Timezone support for date-fns', ecosystem: 'npm', url: 'https://www.npmjs.com/package/date-fns-tz' },
+    { name: 'luxon', reason: 'Built-in timezone handling', ecosystem: 'npm', url: 'https://www.npmjs.com/package/luxon' },
+  ],
   'underscore': [
-    { name: 'lodash', reason: 'More complete utility library', ecosystem: 'npm', url: 'https://www.npmjs.com/package/lodash' },
+    { name: 'lodash-es', reason: 'Tree-shakable utility library', ecosystem: 'npm', url: 'https://www.npmjs.com/package/lodash-es' },
     { name: 'ramda', reason: 'Functional programming utilities', ecosystem: 'npm', url: 'https://www.npmjs.com/package/ramda' },
   ],
   'bower': [
     { name: 'npm', reason: 'Standard Node.js package manager', ecosystem: 'npm', url: 'https://www.npmjs.com/' },
   ],
   'tslint': [
-    { name: 'eslint', reason: 'TSLint is deprecated in favor of ESLint', ecosystem: 'npm', url: 'https://www.npmjs.com/package/eslint' },
+    { name: 'eslint', reason: 'TSLint is deprecated — use ESLint with typescript-eslint', ecosystem: 'npm', url: 'https://www.npmjs.com/package/eslint' },
   ],
   'node-sass': [
     { name: 'sass', reason: 'Dart Sass — the primary Sass implementation', ecosystem: 'npm', url: 'https://www.npmjs.com/package/sass' },
@@ -290,9 +412,142 @@ const KNOWN_REPLACEMENTS: Record<string, ReplacementSuggestion[]> = {
   'left-pad': [
     { name: 'String.prototype.padStart', reason: 'Native JS method — no dependency needed', ecosystem: 'npm', url: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/padStart' },
   ],
-  'chalk': [],
-  'uuid': [],
-  // Python
+  'querystring': [
+    { name: 'URLSearchParams', reason: 'Native Web API — no dependency needed', ecosystem: 'npm', url: 'https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams' },
+  ],
+  'colors': [
+    { name: 'chalk', reason: 'Actively maintained terminal styling', ecosystem: 'npm', url: 'https://www.npmjs.com/package/chalk' },
+    { name: 'picocolors', reason: 'Tiny and fast terminal colors', ecosystem: 'npm', url: 'https://www.npmjs.com/package/picocolors' },
+  ],
+  'faker': [
+    { name: '@faker-js/faker', reason: 'Community-maintained fork after sabotage incident', ecosystem: 'npm', url: 'https://www.npmjs.com/package/@faker-js/faker' },
+  ],
+  'istanbul': [
+    { name: 'nyc', reason: 'Istanbul CLI replacement', ecosystem: 'npm', url: 'https://www.npmjs.com/package/nyc' },
+    { name: 'c8', reason: 'Native V8 code coverage', ecosystem: 'npm', url: 'https://www.npmjs.com/package/c8' },
+  ],
+  'mocha': [
+    { name: 'vitest', reason: 'Modern, fast test framework with ESM support', ecosystem: 'npm', url: 'https://www.npmjs.com/package/vitest' },
+  ],
+  'jasmine': [
+    { name: 'vitest', reason: 'Modern test framework with built-in assertions', ecosystem: 'npm', url: 'https://www.npmjs.com/package/vitest' },
+  ],
+  'karma': [
+    { name: 'vitest', reason: 'Modern browser testing without Karma', ecosystem: 'npm', url: 'https://www.npmjs.com/package/vitest' },
+    { name: 'playwright', reason: 'Browser testing by Microsoft', ecosystem: 'npm', url: 'https://www.npmjs.com/package/playwright' },
+  ],
+  'enzyme': [
+    { name: '@testing-library/react', reason: 'Modern React testing utilities', ecosystem: 'npm', url: 'https://www.npmjs.com/package/@testing-library/react' },
+  ],
+  'protractor': [
+    { name: 'playwright', reason: 'Modern E2E testing framework', ecosystem: 'npm', url: 'https://www.npmjs.com/package/playwright' },
+    { name: 'cypress', reason: 'Popular E2E testing framework', ecosystem: 'npm', url: 'https://www.npmjs.com/package/cypress' },
+  ],
+  'phantomjs': [
+    { name: 'puppeteer', reason: 'Headless Chrome automation', ecosystem: 'npm', url: 'https://www.npmjs.com/package/puppeteer' },
+    { name: 'playwright', reason: 'Multi-browser automation by Microsoft', ecosystem: 'npm', url: 'https://www.npmjs.com/package/playwright' },
+  ],
+  'phantomjs-prebuilt': [
+    { name: 'puppeteer', reason: 'Headless Chrome automation', ecosystem: 'npm', url: 'https://www.npmjs.com/package/puppeteer' },
+  ],
+  'nightmare': [
+    { name: 'playwright', reason: 'Modern browser automation', ecosystem: 'npm', url: 'https://www.npmjs.com/package/playwright' },
+  ],
+  'jade': [
+    { name: 'pug', reason: 'Jade was renamed to Pug', ecosystem: 'npm', url: 'https://www.npmjs.com/package/pug' },
+  ],
+  'merge': [
+    { name: 'deepmerge', reason: 'More robust deep merging', ecosystem: 'npm', url: 'https://www.npmjs.com/package/deepmerge' },
+  ],
+  'mkdirp': [
+    { name: 'fs.mkdirSync', reason: 'Use native fs.mkdirSync with {recursive: true}', ecosystem: 'npm', url: 'https://nodejs.org/api/fs.html#fsmkdirsyncpath-options' },
+  ],
+  'rimraf': [
+    { name: 'fs.rmSync', reason: 'Use native fs.rmSync with {recursive: true}', ecosystem: 'npm', url: 'https://nodejs.org/api/fs.html#fsrmsyncpath-options' },
+  ],
+  'glob': [
+    { name: 'tinyglobby', reason: 'Modern, fast glob implementation', ecosystem: 'npm', url: 'https://www.npmjs.com/package/tinyglobby' },
+  ],
+  'superagent': [
+    { name: 'undici', reason: 'Official Node.js HTTP client', ecosystem: 'npm', url: 'https://www.npmjs.com/package/undici' },
+    { name: 'ky', reason: 'Tiny HTTP client based on Fetch API', ecosystem: 'npm', url: 'https://www.npmjs.com/package/ky' },
+  ],
+  'bluebird': [
+    { name: 'Native Promises', reason: 'V8 native promises are now fast — no library needed', ecosystem: 'npm', url: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise' },
+  ],
+  'async': [
+    { name: 'Native async/await', reason: 'Use native async/await instead', ecosystem: 'npm', url: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function' },
+  ],
+  'q': [
+    { name: 'Native Promises', reason: 'Q is deprecated — use native Promises', ecosystem: 'npm', url: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise' },
+  ],
+  'when': [
+    { name: 'Native Promises', reason: 'Use native Promises/async-await', ecosystem: 'npm', url: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise' },
+  ],
+  'coffee-script': [
+    { name: 'typescript', reason: 'Industry-standard typed JavaScript', ecosystem: 'npm', url: 'https://www.npmjs.com/package/typescript' },
+  ],
+  'coffeescript': [
+    { name: 'typescript', reason: 'Industry-standard typed JavaScript', ecosystem: 'npm', url: 'https://www.npmjs.com/package/typescript' },
+  ],
+  'nomnom': [
+    { name: 'commander', reason: 'Active CLI argument parser', ecosystem: 'npm', url: 'https://www.npmjs.com/package/commander' },
+  ],
+  'optimist': [
+    { name: 'yargs', reason: 'Maintained successor to optimist', ecosystem: 'npm', url: 'https://www.npmjs.com/package/yargs' },
+  ],
+  'minimatch': [
+    { name: 'picomatch', reason: 'Faster, smaller glob matching', ecosystem: 'npm', url: 'https://www.npmjs.com/package/picomatch' },
+  ],
+  'formidable': [
+    { name: 'busboy', reason: 'Faster, streaming multipart parser', ecosystem: 'npm', url: 'https://www.npmjs.com/package/busboy' },
+    { name: 'multer', reason: 'Express middleware for file uploads', ecosystem: 'npm', url: 'https://www.npmjs.com/package/multer' },
+  ],
+  'bcrypt-nodejs': [
+    { name: 'bcrypt', reason: 'Maintained native bcrypt binding', ecosystem: 'npm', url: 'https://www.npmjs.com/package/bcrypt' },
+    { name: 'bcryptjs', reason: 'Pure JS bcrypt — no native deps', ecosystem: 'npm', url: 'https://www.npmjs.com/package/bcryptjs' },
+  ],
+  'node-uuid': [
+    { name: 'uuid', reason: 'node-uuid was renamed to uuid', ecosystem: 'npm', url: 'https://www.npmjs.com/package/uuid' },
+    { name: 'crypto.randomUUID', reason: 'Native Node.js UUID generation', ecosystem: 'npm', url: 'https://nodejs.org/api/crypto.html#cryptorandomuuidoptions' },
+  ],
+  'gulp': [
+    { name: 'npm scripts', reason: 'Native npm scripts or modern bundlers', ecosystem: 'npm', url: 'https://docs.npmjs.com/cli/v10/using-npm/scripts' },
+    { name: 'vite', reason: 'Fast modern build tool', ecosystem: 'npm', url: 'https://www.npmjs.com/package/vite' },
+  ],
+  'grunt': [
+    { name: 'npm scripts', reason: 'Native npm scripts or modern bundlers', ecosystem: 'npm', url: 'https://docs.npmjs.com/cli/v10/using-npm/scripts' },
+    { name: 'vite', reason: 'Fast modern build tool', ecosystem: 'npm', url: 'https://www.npmjs.com/package/vite' },
+  ],
+  'webpack': [
+    { name: 'vite', reason: 'Faster development with HMR', ecosystem: 'npm', url: 'https://www.npmjs.com/package/vite' },
+    { name: 'esbuild', reason: 'Extremely fast JS bundler', ecosystem: 'npm', url: 'https://www.npmjs.com/package/esbuild' },
+  ],
+  'parcel': [
+    { name: 'vite', reason: 'Faster zero-config alternative', ecosystem: 'npm', url: 'https://www.npmjs.com/package/vite' },
+  ],
+  'rollup': [
+    { name: 'tsup', reason: 'TypeScript-first bundler built on esbuild', ecosystem: 'npm', url: 'https://www.npmjs.com/package/tsup' },
+  ],
+  'body-parser': [
+    { name: 'express (built-in)', reason: 'Express 4.16+ has built-in body parsing', ecosystem: 'npm', url: 'https://expressjs.com/en/api.html#express.json' },
+  ],
+  'connect': [
+    { name: 'express', reason: 'Express superseded Connect', ecosystem: 'npm', url: 'https://www.npmjs.com/package/express' },
+  ],
+  'swig': [
+    { name: 'nunjucks', reason: 'Maintained Jinja-like template engine', ecosystem: 'npm', url: 'https://www.npmjs.com/package/nunjucks' },
+  ],
+  'hogan.js': [
+    { name: 'handlebars', reason: 'Actively maintained Mustache superset', ecosystem: 'npm', url: 'https://www.npmjs.com/package/handlebars' },
+  ],
+  'crossenv': [
+    { name: 'cross-env', reason: 'crossenv was a typosquat malware — use cross-env', ecosystem: 'npm', url: 'https://www.npmjs.com/package/cross-env' },
+  ],
+  'event-stream': [
+    { name: 'Highland', reason: 'event-stream was compromised — use Highland or native streams', ecosystem: 'npm', url: 'https://www.npmjs.com/package/highland' },
+  ],
+  // ---- Python ----
   'nose': [
     { name: 'pytest', reason: 'Modern, feature-rich test framework', ecosystem: 'pypi', url: 'https://pypi.org/project/pytest/' },
   ],
@@ -301,6 +556,50 @@ const KNOWN_REPLACEMENTS: Record<string, ReplacementSuggestion[]> = {
   ],
   'pycrypto': [
     { name: 'pycryptodome', reason: 'Maintained fork with security fixes', ecosystem: 'pypi', url: 'https://pypi.org/project/pycryptodome/' },
+  ],
+  'distribute': [
+    { name: 'setuptools', reason: 'distribute merged back into setuptools', ecosystem: 'pypi', url: 'https://pypi.org/project/setuptools/' },
+  ],
+  'pep8': [
+    { name: 'pycodestyle', reason: 'pep8 was renamed to pycodestyle', ecosystem: 'pypi', url: 'https://pypi.org/project/pycodestyle/' },
+  ],
+  'pep257': [
+    { name: 'pydocstyle', reason: 'pep257 was renamed to pydocstyle', ecosystem: 'pypi', url: 'https://pypi.org/project/pydocstyle/' },
+  ],
+  'sklearn': [
+    { name: 'scikit-learn', reason: 'sklearn is the unofficial name — use scikit-learn', ecosystem: 'pypi', url: 'https://pypi.org/project/scikit-learn/' },
+  ],
+  'BeautifulSoup': [
+    { name: 'beautifulsoup4', reason: 'BS3 is unmaintained — use beautifulsoup4', ecosystem: 'pypi', url: 'https://pypi.org/project/beautifulsoup4/' },
+  ],
+  'PIL': [
+    { name: 'Pillow', reason: 'PIL is unmaintained — Pillow is the active fork', ecosystem: 'pypi', url: 'https://pypi.org/project/Pillow/' },
+  ],
+  'fabric': [
+    { name: 'fabric2', reason: 'Fabric 1.x is abandoned — use Fabric 2+', ecosystem: 'pypi', url: 'https://pypi.org/project/fabric/' },
+  ],
+  'mysql-python': [
+    { name: 'mysqlclient', reason: 'Maintained fork of mysql-python', ecosystem: 'pypi', url: 'https://pypi.org/project/mysqlclient/' },
+  ],
+  'django-nose': [
+    { name: 'pytest-django', reason: 'Modern Django test runner', ecosystem: 'pypi', url: 'https://pypi.org/project/pytest-django/' },
+  ],
+  'httplib2': [
+    { name: 'httpx', reason: 'Modern async HTTP client', ecosystem: 'pypi', url: 'https://pypi.org/project/httpx/' },
+    { name: 'requests', reason: 'Popular HTTP library', ecosystem: 'pypi', url: 'https://pypi.org/project/requests/' },
+  ],
+  'urllib3': [
+    { name: 'httpx', reason: 'Modern HTTP client with async support', ecosystem: 'pypi', url: 'https://pypi.org/project/httpx/' },
+  ],
+  // ---- Ruby ----
+  'iconv': [
+    { name: 'String#encode', reason: 'Ruby stdlib encoding — no gem needed', ecosystem: 'rubygems', url: 'https://ruby-doc.org/core/String.html#method-i-encode' },
+  ],
+  'test-unit': [
+    { name: 'rspec', reason: 'Modern Ruby testing framework', ecosystem: 'rubygems', url: 'https://rubygems.org/gems/rspec' },
+  ],
+  'therubyracer': [
+    { name: 'mini_racer', reason: 'Maintained V8 embedding for Ruby', ecosystem: 'rubygems', url: 'https://rubygems.org/gems/mini_racer' },
   ],
 };
 
@@ -316,9 +615,14 @@ export async function analyzePackage(
 ): Promise<PackageAnalysis> {
   try {
     let signals = await fetchRegistrySignals(pkg);
-    if (githubToken) {
-      signals = await enrichWithGitHub(signals, githubToken);
-    }
+
+    // Fetch vulnerabilities and GitHub signals in parallel
+    const [vulns, enrichedSignals] = await Promise.all([
+      fetchVulnerabilities(pkg),
+      githubToken ? enrichWithGitHub(signals, githubToken) : Promise.resolve(signals),
+    ]);
+
+    signals = { ...enrichedSignals, vulnerabilities: vulns };
     const risk = computeRiskScore(signals);
     const replacements = getReplacements(pkg);
 
@@ -344,6 +648,8 @@ export async function analyzePackage(
         description: null,
         homepage: null,
         repository: null,
+        deprecated: null,
+        vulnerabilities: [],
       },
       risk: {
         overall: 50,
@@ -393,12 +699,16 @@ export function computeSummary(analyses: PackageAnalysis[]): ScanSummary {
     low: 0,
     healthy: 0,
     overallHealthScore: 0,
+    totalVulnerabilities: 0,
+    deprecatedCount: 0,
   };
 
   let totalRisk = 0;
   for (const a of analyses) {
     summary[a.risk.level]++;
     totalRisk += a.risk.overall;
+    summary.totalVulnerabilities += a.signals.vulnerabilities.length;
+    if (a.signals.deprecated) summary.deprecatedCount++;
   }
 
   summary.overallHealthScore =

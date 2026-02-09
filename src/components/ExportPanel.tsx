@@ -1,9 +1,9 @@
 'use client';
 
 import { ScanResult } from '@/types';
-import { exportToJSON, exportToPDF, generateBadgeMarkdown } from '@/lib/export';
+import { exportToJSON, exportToPDF, exportToCSV, generateBadgeMarkdown } from '@/lib/export';
 import { getUserPlan } from '@/lib/storage';
-import { Download, FileJson, FileText, Badge, Copy, Lock } from 'lucide-react';
+import { Download, FileJson, FileText, Table2, Badge, Copy, Lock } from 'lucide-react';
 import { useState } from 'react';
 
 export default function ExportPanel({ result }: { result: ScanResult }) {
@@ -26,7 +26,7 @@ export default function ExportPanel({ result }: { result: ScanResult }) {
         Export & Share
       </h3>
 
-      <div className="grid sm:grid-cols-3 gap-3">
+      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
         {/* JSON Export */}
         <button
           onClick={() => isPaid ? exportToJSON(result) : undefined}
@@ -44,6 +44,26 @@ export default function ExportPanel({ result }: { result: ScanResult }) {
               {!isPaid && <Lock className="w-3 h-3 text-surface-500" />}
             </div>
             <p className="text-xs text-surface-500">Machine-readable report</p>
+          </div>
+        </button>
+
+        {/* CSV Export */}
+        <button
+          onClick={() => isPaid ? exportToCSV(result) : undefined}
+          disabled={!isPaid}
+          className={`flex items-center gap-3 p-4 rounded-lg border transition-colors text-left ${
+            isPaid
+              ? 'border-surface-700 hover:border-primary-500/30 hover:bg-surface-800/50'
+              : 'border-surface-800 opacity-50 cursor-not-allowed'
+          }`}
+        >
+          <Table2 className="w-8 h-8 text-green-400 shrink-0" />
+          <div>
+            <div className="text-sm font-medium text-surface-200 flex items-center gap-1.5">
+              Export CSV
+              {!isPaid && <Lock className="w-3 h-3 text-surface-500" />}
+            </div>
+            <p className="text-xs text-surface-500">Spreadsheet-ready data</p>
           </div>
         </button>
 
