@@ -40,7 +40,7 @@ import {
   FolderOpen,
 } from 'lucide-react';
 
-type SortKey = 'risk' | 'name' | 'release';
+type SortKey = 'risk' | 'name' | 'release' | 'vulns';
 type InputMode = 'paste' | 'upload' | 'github-url' | 'github-repos';
 
 const SAMPLE_INPUT = `{
@@ -58,6 +58,77 @@ const SAMPLE_INPUT = `{
   }
 }`;
 
+const QUICK_TEMPLATES: { label: string; desc: string; content: string }[] = [
+  {
+    label: 'React + Express',
+    desc: 'Common full-stack combo',
+    content: `{
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "express": "^4.18.2",
+    "axios": "^1.6.0",
+    "moment": "^2.29.4",
+    "lodash": "^4.17.21",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "mongoose": "^8.0.0",
+    "jsonwebtoken": "^9.0.2"
+  }
+}`,
+  },
+  {
+    label: 'Legacy Node.js',
+    desc: 'Older packages to test',
+    content: `{
+  "dependencies": {
+    "request": "^2.88.2",
+    "moment": "^2.29.4",
+    "underscore": "^1.13.6",
+    "node-sass": "^9.0.0",
+    "coffee-script": "^1.12.7",
+    "bower": "^1.8.14",
+    "tslint": "^6.1.3",
+    "left-pad": "^1.3.0",
+    "gulp": "^4.0.2",
+    "bluebird": "^3.7.2"
+  }
+}`,
+  },
+  {
+    label: 'Python ML Stack',
+    desc: 'Data science dependencies',
+    content: `numpy==1.24.0
+pandas==2.0.3
+scikit-learn==1.3.0
+matplotlib==3.7.2
+requests==2.31.0
+flask==3.0.0
+sqlalchemy==2.0.21
+celery==5.3.4
+pytest==7.4.3
+black==23.9.1`,
+  },
+  {
+    label: 'Next.js Starter',
+    desc: 'Modern Next.js app',
+    content: `{
+  "dependencies": {
+    "next": "^14.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "tailwindcss": "^3.4.0",
+    "typescript": "^5.3.0",
+    "@prisma/client": "^5.6.0",
+    "next-auth": "^4.24.5",
+    "zod": "^3.22.4",
+    "lucide-react": "^0.294.0",
+    "date-fns": "^2.30.0"
+  }
+}`,
+  },
+];
+
 export default function ScannerClient() {
   const [input, setInput] = useState('');
   const [inputMode, setInputMode] = useState<InputMode>('paste');
@@ -69,6 +140,7 @@ export default function ScannerClient() {
   const [showHistory, setShowHistory] = useState(false);
   const [sortKey, setSortKey] = useState<SortKey>('risk');
   const [filterLevel, setFilterLevel] = useState<string>('all');
+  const [searchQuery, setSearchQuery] = useState('');
   const [error, setError] = useState<string | null>(null);
 
   // File upload
@@ -254,10 +326,11 @@ export default function ScannerClient() {
     inputMode === 'github-repos' ? !!selectedRepo :
     false;
 
-  // Sort and filter
+  // Sort, filter, and search
   const sortedPackages = result
     ? [...result.packages]
         .filter((p) => filterLevel === 'all' || p.risk.level === filterLevel)
+        .filter((p) => !searchQuery || p.package.name.toLowerCase().includes(searchQuery.toLowerCase()))
         .sort((a, b) => {
           switch (sortKey) {
             case 'risk':
@@ -269,6 +342,8 @@ export default function ScannerClient() {
                 (b.signals.daysSinceLastRelease ?? 0) -
                 (a.signals.daysSinceLastRelease ?? 0)
               );
+            case 'vulns':
+              return b.signals.vulnerabilities.length - a.signals.vulnerabilities.length;
             default:
               return 0;
           }
@@ -391,6 +466,25 @@ export default function ScannerClient() {
               </button>
             ))}
           </div>
+
+          {/* Quick-scan templates */}
+          {inputMode === 'paste' && !input.trim() && !result && (
+            <div className="mb-4">
+              <p className="text-xs text-surface-500 mb-2">Quick scan a template:</p>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                {QUICK_TEMPLATES.map((t) => (
+                  <button
+                    key={t.label}
+                    onClick={() => { setInput(t.content); setError(null); }}
+                    className="text-left bg-surface-900/50 border border-surface-800 rounded-lg p-3 hover:border-primary-500/30 transition-colors"
+                  >
+                    <span className="text-xs font-medium text-surface-200 block">{t.label}</span>
+                    <span className="text-[10px] text-surface-500">{t.desc}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* ===== PASTE MODE ===== */}
           {inputMode === 'paste' && (
@@ -613,36 +707,84 @@ export default function ScannerClient() {
           {result && (
             <div className="space-y-6 animate-slide-up">
               <ScanSummaryCard summary={result.summary} />
+
+              {/* Smart upgrade prompt — contextual based on scan findings */}
+              {plan.tier === 'free' && (
+                <div className="bg-gradient-to-r from-primary-600/10 via-purple-600/10 to-primary-600/10 border border-primary-500/20 rounded-xl p-5">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1.5">
+                        <Crown className="w-4 h-4 text-amber-400" />
+                        <p className="text-sm font-semibold text-surface-200">
+                          {result.summary.totalVulnerabilities > 0
+                            ? `${result.summary.totalVulnerabilities} vulnerabilit${result.summary.totalVulnerabilities === 1 ? 'y' : 'ies'} found — export a full report`
+                            : result.summary.critical + result.summary.high > 0
+                            ? `${result.summary.critical + result.summary.high} high-risk packages detected`
+                            : 'Unlock PDF reports, SBOM, and CI integration'}
+                        </p>
+                      </div>
+                      <p className="text-xs text-surface-400">
+                        Pro gives you PDF/CSV/JSON exports, CycloneDX SBOM, GitHub Actions CI workflow, and unlimited scans — for just ${config.pricing.proPrice}/mo
+                        <span className="text-surface-600"> (vs $399/mo for Snyk)</span>
+                      </p>
+                    </div>
+                    <a
+                      href={isPolarConfigured() ? getCheckoutUrl('pro') : '/#pricing'}
+                      className="shrink-0 flex items-center gap-1.5 bg-primary-600 hover:bg-primary-500 text-white px-5 py-2.5 rounded-lg text-sm font-medium transition-colors"
+                    >
+                      <Crown className="w-3.5 h-3.5" />
+                      Upgrade to Pro
+                    </a>
+                  </div>
+                </div>
+              )}
+
               <ExportPanel result={result} />
 
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-sm text-surface-400">Filter:</span>
-                  {['all', 'critical', 'high', 'medium', 'low', 'healthy'].map((level) => (
-                    <button
-                      key={level}
-                      onClick={() => setFilterLevel(level)}
-                      className={`px-3 py-1 rounded-md text-xs font-medium transition-colors ${
-                        filterLevel === level
-                          ? 'bg-primary-600/20 text-primary-400 border border-primary-500/30'
-                          : 'bg-surface-800 text-surface-400 hover:text-surface-200 border border-transparent'
-                      }`}
-                    >
-                      {level === 'all' ? 'All' : level.charAt(0).toUpperCase() + level.slice(1)}
-                    </button>
-                  ))}
+              {/* Search, Filter, Sort */}
+              <div className="space-y-3">
+                {/* Search */}
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-500" />
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Search packages by name..."
+                    className="w-full bg-surface-900 border border-surface-700 rounded-xl pl-10 pr-4 py-2.5 text-sm text-surface-200 placeholder:text-surface-600 focus:outline-none focus:border-primary-500"
+                  />
                 </div>
-                <div className="flex items-center gap-2">
-                  <ArrowUpDown className="w-3.5 h-3.5 text-surface-500" />
-                  <select
-                    value={sortKey}
-                    onChange={(e) => setSortKey(e.target.value as SortKey)}
-                    className="bg-surface-800 border border-surface-700 rounded-lg px-3 py-1.5 text-xs text-surface-300 focus:outline-none focus:border-primary-500"
-                  >
-                    <option value="risk">Sort by Risk (High first)</option>
-                    <option value="name">Sort by Name</option>
-                    <option value="release">Sort by Staleness</option>
-                  </select>
+
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-sm text-surface-400">Filter:</span>
+                    {['all', 'critical', 'high', 'medium', 'low', 'healthy'].map((level) => (
+                      <button
+                        key={level}
+                        onClick={() => setFilterLevel(level)}
+                        className={`px-3 py-1 rounded-md text-xs font-medium transition-colors ${
+                          filterLevel === level
+                            ? 'bg-primary-600/20 text-primary-400 border border-primary-500/30'
+                            : 'bg-surface-800 text-surface-400 hover:text-surface-200 border border-transparent'
+                        }`}
+                      >
+                        {level === 'all' ? `All (${result.packages.length})` : `${level.charAt(0).toUpperCase() + level.slice(1)} (${result.packages.filter(p => p.risk.level === level).length})`}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <ArrowUpDown className="w-3.5 h-3.5 text-surface-500" />
+                    <select
+                      value={sortKey}
+                      onChange={(e) => setSortKey(e.target.value as SortKey)}
+                      className="bg-surface-800 border border-surface-700 rounded-lg px-3 py-1.5 text-xs text-surface-300 focus:outline-none focus:border-primary-500"
+                    >
+                      <option value="risk">Sort by Risk (High first)</option>
+                      <option value="vulns">Sort by Vulnerabilities</option>
+                      <option value="name">Sort by Name</option>
+                      <option value="release">Sort by Staleness</option>
+                    </select>
+                  </div>
                 </div>
               </div>
 

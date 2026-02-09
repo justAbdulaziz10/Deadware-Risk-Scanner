@@ -60,6 +60,9 @@ export default function Navbar() {
             <Link href="/#how-it-works" className="text-sm text-surface-400 hover:text-surface-100 transition-colors">
               How It Works
             </Link>
+            <Link href="/#faq" className="text-sm text-surface-400 hover:text-surface-100 transition-colors">
+              FAQ
+            </Link>
             <a
               href={config.githubUrl}
               target="_blank"

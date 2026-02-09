@@ -3,16 +3,16 @@ import ScannerClient from './ScannerClient';
 import { config } from '@/lib/config';
 
 export const metadata: Metadata = {
-  title: 'Dependency Scanner — Deadware Risk Scanner',
+  title: 'Free Dependency Scanner — Scan npm, PyPI, Go, Cargo for CVEs & Abandoned Packages',
   description:
-    'Paste your package.json, requirements.txt, Gemfile, go.mod, or Cargo.toml to scan for abandoned and risky dependencies. Get instant risk scores and replacement suggestions.',
+    'Free online tool to scan package.json, requirements.txt, Gemfile, go.mod, or Cargo.toml for CVE vulnerabilities, abandoned packages, and supply chain risks. No signup required. 100% client-side.',
   alternates: {
     canonical: `${config.siteUrl}/scanner`,
   },
   openGraph: {
-    title: 'Dependency Scanner — Deadware Risk Scanner',
+    title: 'Free Dependency Scanner — CVE & Abandonment Detection',
     description:
-      'Scan your dependencies for abandoned packages. Instant risk scores and replacement suggestions.',
+      'Scan your npm, PyPI, RubyGems, Go, or Cargo dependencies for vulnerabilities, abandoned packages, and supply chain risks. Instant risk scores and replacement suggestions.',
     url: `${config.siteUrl}/scanner`,
   },
 };

@@ -14,9 +14,18 @@ import {
 // ---- Registry fetchers (client-side, CORS-friendly) ----
 
 async function fetchNpmSignals(pkg: ParsedPackage): Promise<MaintenanceSignals> {
-  const res = await fetch(`https://registry.npmjs.org/${encodeURIComponent(pkg.name)}`);
-  if (!res.ok) throw new Error(`npm registry returned ${res.status}`);
-  const data = await res.json();
+  const [registryRes, downloadsRes] = await Promise.all([
+    fetch(`https://registry.npmjs.org/${encodeURIComponent(pkg.name)}`),
+    fetch(`https://api.npmjs.org/downloads/point/last-week/${encodeURIComponent(pkg.name)}`).catch(() => null),
+  ]);
+  if (!registryRes.ok) throw new Error(`npm registry returned ${registryRes.status}`);
+  const data = await registryRes.json();
+
+  let weeklyDownloads: number | null = null;
+  if (downloadsRes?.ok) {
+    const dlData = await downloadsRes.json();
+    weeklyDownloads = dlData.downloads ?? null;
+  }
 
   const times = data.time || {};
   const versions = Object.keys(times).filter((k) => k !== 'created' && k !== 'modified');
@@ -37,8 +46,8 @@ async function fetchNpmSignals(pkg: ParsedPackage): Promise<MaintenanceSignals> 
     lastReleaseDate,
     daysSinceLastRelease: daysSince,
     maintainerCount: maintainers.length,
-    openIssueCount: null, // would need GitHub API
-    weeklyDownloads: null, // would need separate API call
+    openIssueCount: null,
+    weeklyDownloads,
     repositoryArchived: null,
     hasSecurityPolicy: null,
     license: latestData?.license || data.license || null,

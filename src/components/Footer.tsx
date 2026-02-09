@@ -17,8 +17,8 @@ export default function Footer() {
               </span>
             </Link>
             <p className="text-surface-400 text-sm max-w-md mb-4">
-              Stop depending on dead code. Scan your dependency files for abandoned,
-              unmaintained, and risky open-source packages before they break your production build.
+              Free open-source dependency scanner that detects abandoned npm, PyPI, and RubyGems packages.
+              CVE vulnerability scanning, bus factor analysis, deprecation warnings, and replacement suggestions — all running 100% in your browser.
             </p>
             <div className="flex items-center gap-4">
               <a
@@ -66,6 +66,11 @@ export default function Footer() {
               <li>
                 <Link href="/#how-it-works" className="text-sm text-surface-400 hover:text-surface-100 transition-colors">
                   How It Works
+                </Link>
+              </li>
+              <li>
+                <Link href="/#faq" className="text-sm text-surface-400 hover:text-surface-100 transition-colors">
+                  FAQ
                 </Link>
               </li>
             </ul>
