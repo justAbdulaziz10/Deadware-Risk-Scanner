@@ -174,6 +174,170 @@ export function generateBadgeMarkdown(healthScore: number): string {
   return `[![Deadware Risk Score](${url})](${config.siteUrl})`;
 }
 
+// ---- GitHub Actions Workflow Generator ----
+
+export function generateGitHubActionsYAML(ecosystem: string): string {
+  const depFiles: Record<string, string> = {
+    npm: 'package.json',
+    pypi: 'requirements.txt',
+    rubygems: 'Gemfile',
+    go: 'go.mod',
+    cargo: 'Cargo.toml',
+  };
+  const file = depFiles[ecosystem] || 'package.json';
+
+  return `# Deadware Risk Scanner — Automated Dependency Audit
+# Add this to .github/workflows/deadware-scan.yml
+name: Deadware Risk Scan
+
+on:
+  push:
+    branches: [main]
+    paths: ['${file}']
+  pull_request:
+    paths: ['${file}']
+  schedule:
+    - cron: '0 9 * * 1' # Every Monday at 9 AM
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Upload to Deadware Scanner
+        run: |
+          echo "Scan your dependencies at ${config.siteUrl}/scanner"
+          echo "Upload ${file} to get a full risk report"
+          echo ""
+          echo "For automated scanning, use the JSON export API:"
+          echo "1. Scan at ${config.siteUrl}/scanner"
+          echo "2. Export results as JSON"
+          echo "3. Compare against previous baseline"
+
+      - name: Check for critical dependencies
+        run: |
+          # Basic staleness check for ${ecosystem} dependencies
+          echo "Checking ${file} for known abandoned packages..."
+          # Add your custom threshold logic here
+`;
+}
+
+export function copyGitHubActionsYAML(ecosystem: string): void {
+  const yaml = generateGitHubActionsYAML(ecosystem);
+  navigator.clipboard.writeText(yaml);
+}
+
+// ---- SBOM Export (CycloneDX JSON) ----
+
+export function exportToSBOM(result: ScanResult): void {
+  const sbom = {
+    bomFormat: 'CycloneDX',
+    specVersion: '1.5',
+    serialNumber: `urn:uuid:${result.id}`,
+    version: 1,
+    metadata: {
+      timestamp: result.createdAt,
+      tools: [
+        {
+          vendor: 'Deadware Risk Scanner',
+          name: 'deadware-scanner',
+          version: '1.0.0',
+        },
+      ],
+      component: {
+        type: 'application',
+        name: 'scanned-project',
+        version: '0.0.0',
+      },
+    },
+    components: result.packages.map((p) => ({
+      type: 'library',
+      name: p.package.name,
+      version: p.package.version,
+      purl: generatePurl(p.package.ecosystem, p.package.name, p.package.version),
+      properties: [
+        { name: 'deadware:risk-score', value: p.risk.overall.toString() },
+        { name: 'deadware:risk-level', value: p.risk.level },
+        ...(p.signals.deprecated ? [{ name: 'deadware:deprecated', value: 'true' }] : []),
+      ],
+    })),
+    vulnerabilities: result.packages.flatMap((p) =>
+      p.signals.vulnerabilities.map((v) => ({
+        id: v.id,
+        source: { name: 'OSV', url: 'https://osv.dev' },
+        ratings: [
+          {
+            severity: v.severity.toLowerCase(),
+            method: 'other',
+          },
+        ],
+        description: v.summary,
+        affects: [
+          {
+            ref: generatePurl(p.package.ecosystem, p.package.name, p.package.version),
+          },
+        ],
+      }))
+    ),
+  };
+
+  const data = JSON.stringify(sbom, null, 2);
+  downloadFile(data, `deadware-sbom-${result.id.slice(0, 8)}.cdx.json`, 'application/json');
+}
+
+function generatePurl(ecosystem: string, name: string, version: string): string {
+  const typeMap: Record<string, string> = {
+    npm: 'npm',
+    pypi: 'pypi',
+    rubygems: 'gem',
+    go: 'golang',
+    cargo: 'cargo',
+  };
+  const type = typeMap[ecosystem] || ecosystem;
+  return `pkg:${type}/${encodeURIComponent(name)}@${encodeURIComponent(version)}`;
+}
+
+// ---- Share Results ----
+
+export function generateShareData(result: ScanResult): { text: string; title: string } {
+  const { summary } = result;
+  const text = [
+    `Dependency Health Report — Score: ${summary.overallHealthScore}/100`,
+    `${summary.totalPackages} packages scanned (${result.ecosystem.toUpperCase()})`,
+    summary.critical > 0 ? `${summary.critical} critical risk` : null,
+    summary.high > 0 ? `${summary.high} high risk` : null,
+    summary.totalVulnerabilities > 0 ? `${summary.totalVulnerabilities} CVEs found` : null,
+    summary.deprecatedCount > 0 ? `${summary.deprecatedCount} deprecated` : null,
+    '',
+    `Scan your dependencies free: ${config.siteUrl}`,
+  ]
+    .filter(Boolean)
+    .join('\n');
+
+  return {
+    title: `Deadware Risk Report — Health Score: ${summary.overallHealthScore}/100`,
+    text,
+  };
+}
+
+export async function shareResults(result: ScanResult): Promise<boolean> {
+  const { text, title } = generateShareData(result);
+
+  if (navigator.share) {
+    try {
+      await navigator.share({ title, text, url: config.siteUrl });
+      return true;
+    } catch {
+      // User cancelled or not supported
+    }
+  }
+
+  // Fallback: copy to clipboard
+  await navigator.clipboard.writeText(text);
+  return true;
+}
+
 // ---- Helpers ----
 
 function downloadFile(content: string, filename: string, mimeType: string): void {

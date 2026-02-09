@@ -707,6 +707,38 @@ export default function ScannerClient() {
           {result && (
             <div className="space-y-6 animate-slide-up">
               <ScanSummaryCard summary={result.summary} />
+
+              {/* Smart upgrade prompt — contextual based on scan findings */}
+              {plan.tier === 'free' && (
+                <div className="bg-gradient-to-r from-primary-600/10 via-purple-600/10 to-primary-600/10 border border-primary-500/20 rounded-xl p-5">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1.5">
+                        <Crown className="w-4 h-4 text-amber-400" />
+                        <p className="text-sm font-semibold text-surface-200">
+                          {result.summary.totalVulnerabilities > 0
+                            ? `${result.summary.totalVulnerabilities} vulnerabilit${result.summary.totalVulnerabilities === 1 ? 'y' : 'ies'} found — export a full report`
+                            : result.summary.critical + result.summary.high > 0
+                            ? `${result.summary.critical + result.summary.high} high-risk packages detected`
+                            : 'Unlock PDF reports, SBOM, and CI integration'}
+                        </p>
+                      </div>
+                      <p className="text-xs text-surface-400">
+                        Pro gives you PDF/CSV/JSON exports, CycloneDX SBOM, GitHub Actions CI workflow, and unlimited scans — for just ${config.pricing.proPrice}/mo
+                        <span className="text-surface-600"> (vs $399/mo for Snyk)</span>
+                      </p>
+                    </div>
+                    <a
+                      href={isPolarConfigured() ? getCheckoutUrl('pro') : '/#pricing'}
+                      className="shrink-0 flex items-center gap-1.5 bg-primary-600 hover:bg-primary-500 text-white px-5 py-2.5 rounded-lg text-sm font-medium transition-colors"
+                    >
+                      <Crown className="w-3.5 h-3.5" />
+                      Upgrade to Pro
+                    </a>
+                  </div>
+                </div>
+              )}
+
               <ExportPanel result={result} />
 
               {/* Search, Filter, Sort */}

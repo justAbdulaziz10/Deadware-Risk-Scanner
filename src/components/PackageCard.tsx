@@ -14,6 +14,7 @@ import {
   Archive,
   ShieldAlert,
   Ban,
+  TrendingUp,
 } from 'lucide-react';
 
 export default function PackageCard({ analysis }: { analysis: PackageAnalysis }) {
@@ -156,6 +157,16 @@ export default function PackageCard({ analysis }: { analysis: PackageAnalysis })
               warn={false}
             />
             <SignalItem
+              icon={TrendingUp}
+              label="Weekly Downloads"
+              value={
+                signals.weeklyDownloads !== null
+                  ? formatDownloads(signals.weeklyDownloads)
+                  : 'N/A'
+              }
+              warn={signals.weeklyDownloads !== null && signals.weeklyDownloads < 100}
+            />
+            <SignalItem
               icon={Archive}
               label="Archived"
               value={
@@ -278,4 +289,10 @@ function SignalItem({
       </span>
     </div>
   );
+}
+
+function formatDownloads(count: number): string {
+  if (count >= 1_000_000) return `${(count / 1_000_000).toFixed(1)}M`;
+  if (count >= 1_000) return `${(count / 1_000).toFixed(1)}K`;
+  return count.toString();
 }
