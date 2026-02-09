@@ -162,18 +162,18 @@ export default function HomeClient() {
 
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {[
-                { icon: ShieldAlert, title: 'CVE Vulnerability Scanning', desc: 'Checks every dependency against Google\'s OSV database for known security vulnerabilities with CVSS severity ratings.', color: 'text-red-500' },
-                { icon: AlertTriangle, title: 'Deadware Risk Score', desc: 'Every package gets a 0-100 risk score based on 7 weighted factors: staleness, bus factor, archived status, CVEs, deprecation, and more.', color: 'text-red-400' },
-                { icon: GitBranch, title: 'Bus Factor Analysis', desc: 'Identify single-maintainer packages, the #1 predictor of future abandonment and supply chain incidents.', color: 'text-amber-400' },
-                { icon: Package, title: '5 Ecosystems Supported', desc: 'npm (package.json), PyPI (requirements.txt), RubyGems (Gemfile), Go Modules (go.mod), and Cargo (Cargo.toml).', color: 'text-blue-400' },
-                { icon: CheckCircle2, title: '50+ Replacement Suggestions', desc: 'Get curated, actively-maintained alternatives for every risky package, from "moment" to "date-fns".', color: 'text-green-400' },
-                { icon: Eye, title: 'Deprecation Detection', desc: 'Instantly detect npm deprecated packages with the exact deprecation message from maintainers.', color: 'text-orange-400' },
-                { icon: Download, title: 'PDF, JSON & CSV Export', desc: 'Export reports as PDF for stakeholders, JSON for CI/CD, or CSV for spreadsheets.', color: 'text-purple-400' },
-                { icon: Lock, title: 'Privacy-First (BYOK)', desc: 'All analysis runs in your browser. Bring your own GitHub token for richer data. Nothing ever leaves your machine.', color: 'text-teal-400' },
-                { icon: Github, title: 'GitHub Integration', desc: 'Scan any public repo by URL, or connect your account to browse and scan private repos.', color: 'text-surface-300' },
-                { icon: Badge, title: 'CI Health Badge', desc: 'Embed a shields.io badge in your README showing your dependency health score.', color: 'text-indigo-400' },
-                { icon: Table2, title: 'Sort, Filter & Search', desc: 'Sort by risk, name, or staleness. Filter by level. Find the most dangerous dependencies instantly.', color: 'text-cyan-400' },
-                { icon: Zap, title: 'Instant Results', desc: 'Scans complete in seconds with parallel registry and CVE lookups. No queues or accounts needed.', color: 'text-yellow-400' },
+                { icon: ShieldAlert, title: t.feat_cve_title, desc: t.feat_cve_desc, color: 'text-red-500' },
+                { icon: AlertTriangle, title: t.feat_risk_title, desc: t.feat_risk_desc, color: 'text-red-400' },
+                { icon: GitBranch, title: t.feat_bus_title, desc: t.feat_bus_desc, color: 'text-amber-400' },
+                { icon: Package, title: t.feat_eco_title, desc: t.feat_eco_desc, color: 'text-blue-400' },
+                { icon: CheckCircle2, title: t.feat_replace_title, desc: t.feat_replace_desc, color: 'text-green-400' },
+                { icon: Eye, title: t.feat_deprecation_title, desc: t.feat_deprecation_desc, color: 'text-orange-400' },
+                { icon: Download, title: t.feat_export_title, desc: t.feat_export_desc, color: 'text-purple-400' },
+                { icon: Lock, title: t.feat_privacy_title, desc: t.feat_privacy_desc, color: 'text-teal-400' },
+                { icon: Github, title: t.feat_github_title, desc: t.feat_github_desc, color: 'text-surface-300' },
+                { icon: Badge, title: t.feat_badge_title, desc: t.feat_badge_desc, color: 'text-indigo-400' },
+                { icon: Table2, title: t.feat_sort_title, desc: t.feat_sort_desc, color: 'text-cyan-400' },
+                { icon: Zap, title: t.feat_instant_title, desc: t.feat_instant_desc, color: 'text-yellow-400' },
               ].map((feature) => (
                 <div
                   key={feature.title}

@@ -1,20 +1,28 @@
-export type Locale = 'en' | 'zh' | 'es' | 'pt' | 'ja' | 'hi';
+export type Locale = 'en' | 'zh' | 'es' | 'pt' | 'ja' | 'hi' | 'ar' | 'fr' | 'de' | 'ru' | 'ko';
 
 export interface LocaleInfo {
   code: Locale;
   name: string;
   nativeName: string;
   flag: string;
+  rtl?: boolean;
 }
 
 export const LOCALES: LocaleInfo[] = [
   { code: 'en', name: 'English', nativeName: 'English', flag: 'EN' },
+  { code: 'ar', name: 'Arabic', nativeName: 'العربية', flag: 'AR', rtl: true },
   { code: 'zh', name: 'Chinese', nativeName: '中文', flag: 'ZH' },
-  { code: 'es', name: 'Spanish', nativeName: 'Español', flag: 'ES' },
-  { code: 'pt', name: 'Portuguese', nativeName: 'Português', flag: 'PT' },
-  { code: 'ja', name: 'Japanese', nativeName: '日本語', flag: 'JA' },
+  { code: 'fr', name: 'French', nativeName: 'Français', flag: 'FR' },
+  { code: 'de', name: 'German', nativeName: 'Deutsch', flag: 'DE' },
   { code: 'hi', name: 'Hindi', nativeName: 'हिन्दी', flag: 'HI' },
+  { code: 'ja', name: 'Japanese', nativeName: '日本語', flag: 'JA' },
+  { code: 'ko', name: 'Korean', nativeName: '한국어', flag: 'KO' },
+  { code: 'pt', name: 'Portuguese', nativeName: 'Português', flag: 'PT' },
+  { code: 'ru', name: 'Russian', nativeName: 'Русский', flag: 'RU' },
+  { code: 'es', name: 'Spanish', nativeName: 'Español', flag: 'ES' },
 ];
+
+export const RTL_LOCALES: Locale[] = ['ar'];
 
 export const DEFAULT_LOCALE: Locale = 'en';
 
@@ -26,6 +34,8 @@ export interface Translations {
   nav_faq: string;
   nav_login: string;
   nav_signup: string;
+  nav_how_it_works: string;
+  nav_logout: string;
 
   // Hero
   hero_badge: string;
@@ -55,11 +65,40 @@ export interface Translations {
   eco_title_1: string;
   eco_title_2: string;
   eco_subtitle: string;
+  eco_npm: string;
+  eco_pypi: string;
+  eco_ruby: string;
+  eco_go: string;
+  eco_cargo: string;
 
-  // Features
+  // Feature cards (12)
   feat_title_1: string;
   feat_title_2: string;
   feat_subtitle: string;
+  feat_cve_title: string;
+  feat_cve_desc: string;
+  feat_risk_title: string;
+  feat_risk_desc: string;
+  feat_bus_title: string;
+  feat_bus_desc: string;
+  feat_eco_title: string;
+  feat_eco_desc: string;
+  feat_replace_title: string;
+  feat_replace_desc: string;
+  feat_deprecation_title: string;
+  feat_deprecation_desc: string;
+  feat_export_title: string;
+  feat_export_desc: string;
+  feat_privacy_title: string;
+  feat_privacy_desc: string;
+  feat_github_title: string;
+  feat_github_desc: string;
+  feat_badge_title: string;
+  feat_badge_desc: string;
+  feat_sort_title: string;
+  feat_sort_desc: string;
+  feat_instant_title: string;
+  feat_instant_desc: string;
 
   // Pricing
   pricing_badge: string;
@@ -78,6 +117,74 @@ export interface Translations {
   pricing_upgrade_pro: string;
   pricing_upgrade_team: string;
   pricing_trust_text: string;
+  pricing_forever: string;
+  pricing_free_f1: string;
+  pricing_free_f2: string;
+  pricing_free_f3: string;
+  pricing_free_f4: string;
+  pricing_free_f5: string;
+  pricing_free_f6: string;
+  pricing_pro_f1: string;
+  pricing_pro_f2: string;
+  pricing_pro_f3: string;
+  pricing_pro_f4: string;
+  pricing_pro_f5: string;
+  pricing_pro_f6: string;
+  pricing_pro_f7: string;
+  pricing_pro_f8: string;
+  pricing_team_f1: string;
+  pricing_team_f2: string;
+  pricing_team_f3: string;
+  pricing_team_f4: string;
+  pricing_team_f5: string;
+  pricing_team_f6: string;
+  pricing_team_f7: string;
+  pricing_save_vs: string;
+  pricing_per_seat: string;
+  pricing_payments_msg: string;
+
+  // Comparison
+  compare_title_1: string;
+  compare_title_2: string;
+  compare_subtitle: string;
+  compare_feature: string;
+  compare_f1: string;
+  compare_f2: string;
+  compare_f3: string;
+  compare_f4: string;
+  compare_f5: string;
+  compare_f6: string;
+  compare_f7: string;
+  compare_f8: string;
+  compare_f9: string;
+  compare_f10: string;
+  compare_f11: string;
+  compare_f12: string;
+
+  // FAQ
+  faq_title_1: string;
+  faq_title_2: string;
+  faq_subtitle: string;
+  faq_q1: string;
+  faq_a1: string;
+  faq_q2: string;
+  faq_a2: string;
+  faq_q3: string;
+  faq_a3: string;
+  faq_q4: string;
+  faq_a4: string;
+  faq_q5: string;
+  faq_a5: string;
+  faq_q6: string;
+  faq_a6: string;
+  faq_q7: string;
+  faq_a7: string;
+  faq_q8: string;
+  faq_a8: string;
+  faq_q9: string;
+  faq_a9: string;
+  faq_q10: string;
+  faq_a10: string;
 
   // CTA
   cta_title: string;
@@ -103,6 +210,50 @@ export interface Translations {
   scan_filter: string;
   scan_all: string;
   scan_no_match: string;
+  scan_history: string;
+  scan_settings: string;
+  scan_no_history: string;
+  scan_packages: string;
+  scan_health: string;
+  scan_sort_risk: string;
+  scan_sort_vulns: string;
+  scan_sort_name: string;
+  scan_sort_staleness: string;
+  scan_support_text: string;
+  scan_buy_coffee: string;
+  scan_file_loaded: string;
+  scan_remove_file: string;
+  scan_drop_file: string;
+  scan_supported_files: string;
+  scan_public_repo: string;
+  scan_auto_find: string;
+  scan_connect_github: string;
+  scan_add_token: string;
+  scan_open_settings: string;
+  scan_search_repos: string;
+  scan_private: string;
+  scan_no_repos_match: string;
+  scan_repos_loaded: string;
+  scan_refresh: string;
+  scan_loading_repos: string;
+  scan_tpl_react: string;
+  scan_tpl_react_desc: string;
+  scan_tpl_legacy: string;
+  scan_tpl_legacy_desc: string;
+  scan_tpl_python: string;
+  scan_tpl_python_desc: string;
+  scan_tpl_nextjs: string;
+  scan_tpl_nextjs_desc: string;
+  scan_error_limit: string;
+  scan_error_no_url: string;
+  scan_error_select_repo: string;
+  scan_error_no_content: string;
+  scan_error_no_packages: string;
+  scan_paste_placeholder: string;
+  scan_upgrade_vulns: string;
+  scan_upgrade_high_risk: string;
+  scan_upgrade_unlock: string;
+  scan_upgrade_desc: string;
 
   // Export
   export_title: string;
@@ -110,6 +261,35 @@ export interface Translations {
   export_copied: string;
   export_unlock: string;
   export_upgrade: string;
+  export_json_desc: string;
+  export_csv_desc: string;
+  export_pdf_desc: string;
+  export_sbom_desc: string;
+  export_badge_desc: string;
+  export_ci_desc: string;
+  export_pro_hint: string;
+  export_exported: string;
+
+  // Package card
+  pkg_deprecated: string;
+  pkg_deprecated_label: string;
+  pkg_vulns_title: string;
+  pkg_more_vulns: string;
+  pkg_last_release: string;
+  pkg_days_ago: string;
+  pkg_unknown: string;
+  pkg_maintainers: string;
+  pkg_open_issues: string;
+  pkg_license: string;
+  pkg_weekly_downloads: string;
+  pkg_na: string;
+  pkg_archived: string;
+  pkg_yes: string;
+  pkg_no: string;
+  pkg_risk_factors: string;
+  pkg_replacements: string;
+  pkg_repository: string;
+  pkg_homepage: string;
 
   // Footer
   footer_desc: string;
@@ -119,6 +299,7 @@ export interface Translations {
   footer_report_bug: string;
   footer_coffee: string;
   footer_made_with: string;
+  footer_community: string;
 
   // Common
   common_upgrade_pro: string;

@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { PackageAnalysis } from '@/types';
 import RiskBadge from './RiskBadge';
+import { useT } from './I18nProvider';
 import {
   ChevronDown,
   ChevronUp,
@@ -19,6 +20,7 @@ import {
 
 export default function PackageCard({ analysis }: { analysis: PackageAnalysis }) {
   const [expanded, setExpanded] = useState(false);
+  const t = useT();
   const { package: pkg, signals, risk, replacements, error } = analysis;
 
   return (
@@ -37,7 +39,7 @@ export default function PackageCard({ analysis }: { analysis: PackageAnalysis })
               </span>
               {signals.deprecated && (
                 <span className="text-[10px] font-semibold bg-red-500/15 text-red-400 border border-red-500/20 px-1.5 py-0.5 rounded flex items-center gap-1">
-                  <Ban className="w-3 h-3" /> DEPRECATED
+                  <Ban className="w-3 h-3" /> {t.pkg_deprecated}
                 </span>
               )}
               {signals.vulnerabilities.length > 0 && (
@@ -77,7 +79,7 @@ export default function PackageCard({ analysis }: { analysis: PackageAnalysis })
             <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3 flex items-start gap-2">
               <Ban className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
               <div>
-                <span className="text-sm font-medium text-red-400">Deprecated</span>
+                <span className="text-sm font-medium text-red-400">{t.pkg_deprecated_label}</span>
                 <p className="text-xs text-red-400/80 mt-0.5">{signals.deprecated}</p>
               </div>
             </div>
@@ -88,7 +90,7 @@ export default function PackageCard({ analysis }: { analysis: PackageAnalysis })
             <div>
               <h4 className="text-xs font-semibold text-red-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
                 <ShieldAlert className="w-3.5 h-3.5" />
-                Known Vulnerabilities ({signals.vulnerabilities.length})
+                {t.pkg_vulns_title} ({signals.vulnerabilities.length})
               </h4>
               <div className="space-y-1.5">
                 {signals.vulnerabilities.slice(0, 10).map((vuln) => (
@@ -119,7 +121,7 @@ export default function PackageCard({ analysis }: { analysis: PackageAnalysis })
                 ))}
                 {signals.vulnerabilities.length > 10 && (
                   <p className="text-xs text-surface-500 text-center py-1">
-                    +{signals.vulnerabilities.length - 10} more vulnerabilities
+                    +{signals.vulnerabilities.length - 10} {t.pkg_more_vulns}
                   </p>
                 )}
               </div>
@@ -130,51 +132,51 @@ export default function PackageCard({ analysis }: { analysis: PackageAnalysis })
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             <SignalItem
               icon={Clock}
-              label="Last Release"
+              label={t.pkg_last_release}
               value={
                 signals.daysSinceLastRelease !== null
-                  ? `${signals.daysSinceLastRelease} days ago`
-                  : 'Unknown'
+                  ? `${signals.daysSinceLastRelease} ${t.pkg_days_ago}`
+                  : t.pkg_unknown
               }
               warn={signals.daysSinceLastRelease !== null && signals.daysSinceLastRelease > 365}
             />
             <SignalItem
               icon={Users}
-              label="Maintainers"
-              value={signals.maintainerCount?.toString() ?? 'Unknown'}
+              label={t.pkg_maintainers}
+              value={signals.maintainerCount?.toString() ?? t.pkg_unknown}
               warn={signals.maintainerCount !== null && signals.maintainerCount <= 1}
             />
             <SignalItem
               icon={AlertCircle}
-              label="Open Issues"
-              value={signals.openIssueCount?.toString() ?? 'N/A'}
+              label={t.pkg_open_issues}
+              value={signals.openIssueCount?.toString() ?? t.pkg_na}
               warn={signals.openIssueCount !== null && signals.openIssueCount > 200}
             />
             <SignalItem
               icon={Scale}
-              label="License"
-              value={signals.license ?? 'Unknown'}
+              label={t.pkg_license}
+              value={signals.license ?? t.pkg_unknown}
               warn={false}
             />
             <SignalItem
               icon={TrendingUp}
-              label="Weekly Downloads"
+              label={t.pkg_weekly_downloads}
               value={
                 signals.weeklyDownloads !== null
                   ? formatDownloads(signals.weeklyDownloads)
-                  : 'N/A'
+                  : t.pkg_na
               }
               warn={signals.weeklyDownloads !== null && signals.weeklyDownloads < 100}
             />
             <SignalItem
               icon={Archive}
-              label="Archived"
+              label={t.pkg_archived}
               value={
                 signals.repositoryArchived === null
-                  ? 'N/A'
+                  ? t.pkg_na
                   : signals.repositoryArchived
-                  ? 'Yes'
-                  : 'No'
+                  ? t.pkg_yes
+                  : t.pkg_no
               }
               warn={signals.repositoryArchived === true}
             />
@@ -183,7 +185,7 @@ export default function PackageCard({ analysis }: { analysis: PackageAnalysis })
           {/* Risk factors */}
           <div>
             <h4 className="text-xs font-semibold text-surface-400 uppercase tracking-wider mb-2">
-              Risk Factors
+              {t.pkg_risk_factors}
             </h4>
             <div className="space-y-2">
               {risk.factors.map((factor) => (
@@ -216,7 +218,7 @@ export default function PackageCard({ analysis }: { analysis: PackageAnalysis })
           {replacements.length > 0 && (
             <div>
               <h4 className="text-xs font-semibold text-surface-400 uppercase tracking-wider mb-2">
-                Suggested Replacements
+                {t.pkg_replacements}
               </h4>
               <div className="space-y-2">
                 {replacements.map((r) => (
@@ -247,7 +249,7 @@ export default function PackageCard({ analysis }: { analysis: PackageAnalysis })
                 rel="noopener noreferrer"
                 className="text-xs text-primary-400 hover:text-primary-300 flex items-center gap-1"
               >
-                Repository <ExternalLink className="w-3 h-3" />
+                {t.pkg_repository} <ExternalLink className="w-3 h-3" />
               </a>
             )}
             {signals.homepage && (
@@ -257,7 +259,7 @@ export default function PackageCard({ analysis }: { analysis: PackageAnalysis })
                 rel="noopener noreferrer"
                 className="text-xs text-primary-400 hover:text-primary-300 flex items-center gap-1"
               >
-                Homepage <ExternalLink className="w-3 h-3" />
+                {t.pkg_homepage} <ExternalLink className="w-3 h-3" />
               </a>
             )}
           </div>
