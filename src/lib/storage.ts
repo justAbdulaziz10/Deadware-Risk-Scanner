@@ -96,6 +96,8 @@ export async function fetchUserPlan(): Promise<UserPlan> {
 
   try {
     const supabase = createClient();
+    if (!supabase) return FREE_PLAN;
+
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) return FREE_PLAN;
@@ -122,6 +124,8 @@ export async function incrementScanCount(): Promise<void> {
 
   try {
     const supabase = createClient();
+    if (!supabase) return;
+
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) return;
@@ -140,7 +144,6 @@ export async function canScan(): Promise<boolean> {
 }
 
 // Synchronous fallback for components that can't await
-// (used for initial render — real check is async)
 export function getUserPlan(): UserPlan {
   return FREE_PLAN;
 }
